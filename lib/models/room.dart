@@ -1,8 +1,13 @@
-import 'package:poc_chat/models/message/message.dart';
+import 'package:isar/isar.dart';
+import 'package:poc_chat/models/message.dart';
+import 'package:poc_chat/models/user.dart';
 
+part 'room.g.dart';
+
+@collection
 class Room {
-  Room({required this.id, required this.messages});
+  Id id = Isar.autoIncrement;
 
-  final String id;
-  final List<Message> messages;
+  final messages = IsarLinks<Message>();
+  final members = IsarLinks<User>();
 }

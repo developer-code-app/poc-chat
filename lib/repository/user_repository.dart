@@ -1,10 +1,12 @@
 import 'package:poc_chat/models/user.dart';
+import 'package:poc_chat/providers/service/isar_service.dart';
 
 class UserRepository {
-  Future<List<User>> fetchUsers() {
-    return Future.value([
-      User(id: '1', imageUrl: '', name: 'Namfon'),
-      User(id: '2', imageUrl: '', name: 'Pattarapon'),
-    ]);
+  UserRepository({required this.isar});
+
+  final IsarService isar;
+
+  Future<List<User>> fetchUsers() async {
+    return await isar.fetchUsers();
   }
 }

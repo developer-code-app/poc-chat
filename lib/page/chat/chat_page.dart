@@ -1,122 +1,120 @@
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:poc_chat/models/message/appointment_message.dart';
-import 'package:poc_chat/models/message/basic_message.dart';
-import 'package:poc_chat/models/message/message.dart';
-import 'package:poc_chat/models/message/photo_message.dart';
-import 'package:poc_chat/models/message/subscription_message.dart';
-import 'package:poc_chat/models/user.dart';
-import 'package:poc_chat/repository/room_repository.dart';
+import 'package:poc_chat/models/message.dart';
+import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({required this.user, super.key});
-
-  final User user;
+  const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final repository = RoomRepository();
+  final textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: colorScheme.inversePrimary,
-        title: Text('Hello, ${widget.user.name}'),
-      ),
-      backgroundColor: Colors.grey.shade100,
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder(
-              future: repository.fetchRoom(roomId: '1'),
-              builder: (context, snapshot) {
-                final messages = snapshot.data?.messages ?? [];
+    return BlocBuilder<ChatPageBloc, ChatPageState>(builder: (context, state) {
+      final bloc = context.read<ChatPageBloc>();
 
-                return ListView(
-                  children: messages.map((message) {
-                    return _buildMessage(
-                      context,
-                      messages: messages,
-                      message: message,
-                    );
+      if (state is LoadSuccessState) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: colorScheme.inversePrimary,
+            title: Text('Hello, ${state.currentUser.name}'),
+          ),
+          backgroundColor: Colors.grey.shade100,
+          body: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: state.room.messages.map((message) {
+                    return _buildMessage(context, state, message: message);
                   }).toList(),
-                );
-              },
-            ),
-          ),
-          Container(
-            color: colorScheme.inversePrimary,
-            height: 100,
-            width: double.maxFinite,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Icon(
-                        Icons.camera_alt_outlined,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Icon(
-                        Icons.photo_outlined,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(hintText: 'Aa'),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              Container(
+                color: colorScheme.inversePrimary,
+                height: 100,
+                width: double.maxFinite,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Icon(
+                            Icons.camera_alt_outlined,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Icon(
+                            Icons.photo_outlined,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: textEditingController,
+                          decoration: const InputDecoration(hintText: 'Aa'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: GestureDetector(
+                          onTap: () => bloc.add(
+                            SendMessageEvent(textEditingController.text),
+                          ),
+                          child: Icon(
+                            Icons.send,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
+      } else if (state is LoadFailureState) {
+        return Scaffold(body: Center(child: Text(state.error.toString())));
+      } else {
+        return Scaffold(body: Container());
+      }
+    });
   }
 
   Widget _buildMessage(
-    BuildContext context, {
-    required List<Message> messages,
+    BuildContext context,
+    LoadSuccessState state, {
     required Message message,
   }) {
-    final index = messages.indexOf(message);
-    final previousMessage = index > 0 ? messages[index - 1] : null;
-    final isOwner = message.user.id == widget.user.id;
+    final isOwner = message.owner.value?.id == state.currentUser.id;
+    final text = message.text;
+    final subscription = message.subscription;
+    final appointment = message.appointment;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -126,19 +124,20 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment:
               isOwner ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            _buildUser(
-              context,
-              message: message,
-              previousMessage: previousMessage,
-            ),
-            if (message is BasicMessage)
-              _buildBasicMessage(context, message: message),
-            if (message is SubscriptionMessage)
-              _buildSubscriptionMessage(context, message: message),
-            if (message is AppointmentMessage)
-              _buildAppointmentMessage(context, message: message),
-            if (message is PhotoMessage)
-              _buildPhotoMessage(context, message: message),
+            _buildUser(context, state, message: message),
+            if (message.type == MessageType.basic && text != null)
+              _buildBasicMessage(context, state, message: message),
+            if (message.type == MessageType.subscription &&
+                subscription != null)
+              _buildSubscriptionMessage(
+                context,
+                subscription: subscription,
+              ),
+            if (message.type == MessageType.appointment && appointment != null)
+              _buildAppointmentMessage(
+                context,
+                appointment: appointment,
+              ),
           ],
         ),
       ),
@@ -146,11 +145,12 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildBasicMessage(
-    BuildContext context, {
-    required BasicMessage message,
+    BuildContext context,
+    LoadSuccessState state, {
+    required Message message,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isOwner = message.user.id == widget.user.id;
+    final isOwner = message.owner.value?.id == state.currentUser.id;
 
     return Container(
       decoration: BoxDecoration(
@@ -160,7 +160,7 @@ class _ChatPageState extends State<ChatPage> {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Text(
-          message.text,
+          message.text ?? '',
           style: const TextStyle(fontSize: 16),
         ),
       ),
@@ -169,7 +169,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildSubscriptionMessage(
     BuildContext context, {
-    required SubscriptionMessage message,
+    required Subscription subscription,
   }) {
     return Container(
       width: 160,
@@ -191,9 +191,9 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text(message.packageName),
+            child: Text(subscription.packageName),
           ),
-          if (message.isPaid)
+          if (subscription.isPaid)
             TextButton(onPressed: () {}, child: const Text('ชำระเงินแล้ว'))
           else
             TextButton(onPressed: () {}, child: const Text('ชำระเงิน'))
@@ -204,9 +204,9 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildAppointmentMessage(
     BuildContext context, {
-    required AppointmentMessage message,
+    required Appointment appointment,
   }) {
-    final time = message.time;
+    final selectedDate = appointment.selectedDate;
 
     return Container(
       width: 300,
@@ -228,7 +228,7 @@ class _ChatPageState extends State<ChatPage> {
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(message.packageName),
+            child: Text(appointment.packageName),
           ),
           const Divider(),
           const Padding(
@@ -239,7 +239,7 @@ class _ChatPageState extends State<ChatPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               DateFormat('dd MMMM yyyy')
-                  .format(message.availableDates.first.date),
+                  .format(appointment.availableDates.first.date),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -247,11 +247,11 @@ class _ChatPageState extends State<ChatPage> {
             ),
           ),
           const SizedBox(height: 4),
-          if (time != null)
+          if (selectedDate != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                time.description() ?? '',
+                selectedDate.time.description() ?? '',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -259,7 +259,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
             )
           else
-            ...message.availableDates
+            ...appointment.availableDates
                 .map<Widget>((availableDate) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -283,20 +283,17 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildPhotoMessage(
-    BuildContext context, {
-    required PhotoMessage message,
-  }) {
-    return Container();
-  }
-
   Widget _buildUser(
-    BuildContext context, {
+    BuildContext context,
+    LoadSuccessState state, {
     required Message message,
-    Message? previousMessage,
   }) {
-    if (previousMessage?.user.id != message.user.id) {
-      final isOwner = message.user.id == widget.user.id;
+    final messages = state.room.messages.toList();
+    final index = messages.indexOf(message);
+    final previousMessage = index > 0 ? messages[index - 1] : null;
+
+    if (previousMessage?.owner.value?.id != message.owner.value?.id) {
+      final isOwner = message.owner.value?.id == state.currentUser.id;
 
       return !isOwner
           ? Padding(
@@ -313,7 +310,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    message.user.name,
+                    message.owner.value?.name ?? '',
                     style: const TextStyle(fontSize: 14),
                   ),
                 ],
