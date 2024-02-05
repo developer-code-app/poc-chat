@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat/page/login/bloc/login_page_bloc.dart';
 import 'package:poc_chat/page/login/login_page.dart';
-import 'package:poc_chat/providers/service/isar_service.dart';
-import 'package:poc_chat/repository/room_repository.dart';
+import 'package:poc_chat/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat/repository/user_repository.dart';
 
 void main() {
@@ -24,7 +23,9 @@ class MyApp extends StatelessWidget {
       home: MultiRepositoryProvider(
         providers: [
           RepositoryProvider<UserRepository>(
-            create: (context) => UserRepository(isar: IsarService()),
+            create: (context) => UserRepository(
+              storageProvider: IsarStorageProvider.basic(),
+            ),
           ),
         ],
         child: MultiBlocProvider(

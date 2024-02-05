@@ -50,13 +50,13 @@ class LoginPageBloc extends Bloc<LoginPageEvent, LoginPageState> {
     SetupMockDataEvent event,
     Emitter emit,
   ) async {
-    repository.isar.setMockData();
+    repository.addUsersMockData();
   }
 
   Future<void> _mapClearDatabaseToState(
     ClearDatabaseEvent event,
     Emitter emit,
   ) async {
-    repository.isar.close();
+    repository.removeUsersMockDate();
   }
 }

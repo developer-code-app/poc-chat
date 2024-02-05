@@ -1,54 +1,25 @@
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:poc_chat/models/message.dart';
-import 'package:poc_chat/models/room.dart';
+import 'package:poc_chat/models/message_type.dart';
+import 'package:poc_chat/models/time.dart';
 import 'package:poc_chat/models/user.dart';
+import 'package:poc_chat/providers/isar_storage/entities/isar_chat_room_entity.dart';
+import 'package:poc_chat/providers/isar_storage/entities/isar_message_entity.dart';
+import 'package:poc_chat/providers/isar_storage/entities/isar_user_entity.dart';
 
-class IsarService {
-  IsarService() {
-    db = openDB();
-  }
+class IsarUserService {
+  IsarUserService(this.isar);
 
-  late Future<Isar> db;
+  final Future<Isar> isar;
 
   Future<List<User>> fetchUsers() async {
-    final isar = await db;
+    final users = await isar.then(
+      (isar) => isar.isarUserEntitys.where().findAll(),
+    );
 
-    return isar.users.where().findAll();
+    return users.map(User.fromEntity).toList();
   }
 
-  Future<Room> fetchRoom({required int roomId}) async {
-    final isar = await db;
-    final room = await isar.rooms.get(roomId);
-
-    if (room == null) throw Exception('Room not found.');
-
-    return Future.value(room);
-  }
-
-  Future<Isar> openDB() async {
-    if (Isar.instanceNames.isEmpty) {
-      final dir = await getApplicationDocumentsDirectory();
-
-      return await Isar.open(
-        [RoomSchema, MessageSchema, UserSchema],
-        inspector: true,
-        directory: dir.path,
-      );
-    }
-
-    return Future.value(Isar.getInstance());
-  }
-
-  Future<bool> close() async {
-    final isar = await db;
-
-    return isar.close(deleteFromDisk: true);
-  }
-
-  Future<void> setMockData() async {
-    final isar = await db;
-
+  Future<void> addMockData() async {
     const packageName =
         'มอเตอร์ประตูรีโมท HomeXpert ประตูบานซ้อน 2 ติดตั้งแบบสลิง...';
     final availableDates = [
@@ -59,101 +30,111 @@ class IsarService {
         ..date = DateTime.now()
         ..time = Time.afternoon,
     ];
-    final room = Room();
     final users = ['SC Asset', 'Pattarapon']
-        .map(
-          (userName) => User()
-            ..name = userName
-            ..imageUrl = '',
-        )
+        .map((name) => IsarUserEntity()
+          ..name = name
+          ..imageUrl = '')
         .toList();
+    final room = IsarChatRoomEntity();
     final messages = [
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text =
             'สวัสดีค่ะ น้ำฝนนะคะ ตามที่เราเคยคุยกันไว้เรื่องติดตั้งประตูไฟฟ้า คุณรวิทัตได้เลือกแบบสลิง ที่ราคา 33,000 บาท ใช่มัยคะ',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'ใช่ครับผม',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'โอเคค่ะ ฝนรบกวนคุณรวิทัตชำระเงินแพ็กเกจนี้ให้หน่อยนะคะ',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.subscription
         ..subscription = (Subscription()
           ..imageUrl = ''
           ..packageName = packageName
           ..isPaid = false),
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'สักครู่นะครับ กำลังชำระเงินครับ',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.last
         ..type = MessageType.subscription
         ..subscription = (Subscription()
           ..imageUrl = ''
           ..packageName = packageName
           ..isPaid = true),
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'เรียบร้อยครับผม',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text =
             'ขอบคุณค่ะ สะดวกให้เข้าไปติดตั้งวันไหนบ้างคะใกล้สุดจะมี 1/11, 5/11 ค่ะ',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'ผมสะดวก วันที่ 1/11 ครับ',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'ได้เลยค่ะ เดี๋ยวฝนจะทำนัดหมายให้นะคะ',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'รบกวนคุณรวิทัต เลือกช่วงเวลาให้ฝนหน่อยค่ะ',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.appointment
         ..appointment = (Appointment()
           ..packageName = packageName
           ..availableDates = availableDates),
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'ตามนี้เลยครับผม',
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.last
         ..type = MessageType.appointment
         ..appointment = (Appointment()
           ..packageName = packageName
           ..availableDates = availableDates),
-      Message()
+      IsarMessageEntity()
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'รับทราบค่ะ ขอบคุณค่ะ',
     ];
 
-    await isar.writeTxn(() async {
-      await isar.users.putAll(users);
-      await isar.rooms.put(room);
-      await isar.messages.putAll(messages);
+    await isar.then(
+      (isar) => isar.writeTxn(() async {
+        await isar.isarUserEntitys.putAll(users);
+        await isar.isarChatRoomEntitys.putAll([room]);
+        await isar.isarMessageEntitys.putAll(messages);
 
-      room.members.addAll(users);
-      room.messages.addAll(messages);
+        room.members.addAll(users);
+        room.messages.addAll(messages);
 
-      messages.forEach((message) => message.owner.save());
+        messages.forEach((message) => message.owner.save());
 
-      await room.members.save();
-      await room.messages.save();
-    });
+        await room.members.save();
+        await room.messages.save();
+      }),
+    );
+  }
+
+  Future<void> removeMockData() async {
+    await isar.then(
+      (isar) => isar.writeTxn(() async {
+        await isar.isarUserEntitys.clear();
+        await isar.isarChatRoomEntitys.clear();
+        await isar.isarMessageEntitys.clear();
+      }),
+    );
   }
 }

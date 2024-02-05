@@ -1,12 +1,12 @@
-import 'package:poc_chat/models/room.dart';
-import 'package:poc_chat/providers/service/isar_service.dart';
+import 'package:poc_chat/models/chat_room.dart';
+import 'package:poc_chat/providers/isar_storage/isar_storage_provider.dart';
 
 class RoomRepository {
-  RoomRepository({required this.isar});
+  RoomRepository({required this.storageProvider});
 
-  final IsarService isar;
+  final IsarStorageProvider storageProvider;
 
-  Future<Room> fetchRoom({required int roomId}) async {
-    return isar.fetchRoom(roomId: roomId);
+  Future<ChatRoom> fetchRoom({required int roomId}) async {
+    return storageProvider.chatRoom.fetchRoom(roomId: roomId);
   }
 }

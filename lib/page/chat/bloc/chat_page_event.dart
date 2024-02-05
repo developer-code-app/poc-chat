@@ -7,7 +7,7 @@ class StartedEvent extends _Event {}
 class DataLoadedEvent extends _Event {
   DataLoadedEvent({required this.room});
 
-  final Room room;
+  final ChatRoom room;
 }
 
 class ErrorOccurredEvent extends _Event {

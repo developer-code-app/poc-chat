@@ -1,72 +1,121 @@
-import 'package:isar/isar.dart';
-import 'package:poc_chat/models/room.dart';
+import 'package:dfunc/dfunc.dart';
+import 'package:poc_chat/extensions/extended_nullable.dart';
+import 'package:poc_chat/models/message_type.dart';
+import 'package:poc_chat/models/time.dart';
 import 'package:poc_chat/models/user.dart';
+import 'package:poc_chat/providers/isar_storage/entities/isar_message_entity.dart'
+    as isar_entity;
 
-part 'message.g.dart';
+abstract class Message {
+  Message({required this.id, required this.owner});
 
-@collection
-class Message {
-  Id id = Isar.autoIncrement;
+  factory Message.fromEntity(isar_entity.IsarMessageEntity entity) {
+    final invalidException = Exception('Invalid response spec.');
+    final owner = entity.owner.value
+        .getOrThrowException(Exception('User not found.'))
+        .let(User.fromEntity);
 
-  @enumerated
-  late MessageType type;
+    switch (entity.type) {
+      case MessageType.basic:
+        return BasicMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          text: entity.text.getOrThrowException(invalidException),
+        );
+      case MessageType.photo:
+        return PhotoMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          photos: entity.photos.getOrThrowException(invalidException),
+        );
+      case MessageType.subscription:
+        final subscription =
+            entity.subscription.getOrThrowException(invalidException);
 
-  String? text;
-  List<String>? photos;
-  Subscription? subscription;
-  Appointment? appointment;
+        return SubscriptionMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          imageUrl: subscription.imageUrl,
+          packageName: subscription.packageName,
+          isPaid: subscription.isPaid,
+        );
+      case MessageType.appointment:
+        final appointment =
+            entity.appointment.getOrThrowException(invalidException);
+        final availableDates =
+            appointment.availableDates.map(AvailableDate.fromEntity).toList();
 
-  @Backlink(to: 'messages')
-  final room = IsarLink<Room>();
-  final owner = IsarLink<User>();
-}
-
-@embedded
-class Subscription {
-  late String imageUrl;
-  late String packageName;
-  late bool isPaid;
-}
-
-@embedded
-class Appointment {
-  late String packageName;
-  late List<AvailableDate> availableDates;
-
-  AvailableDate? selectedDate;
-}
-
-@embedded
-class AvailableDate {
-  late DateTime date;
-
-  @enumerated
-  late Time time;
-}
-
-enum Time {
-  morning,
-  afternoon,
-  custom,
-}
-
-enum MessageType {
-  basic,
-  photo,
-  subscription,
-  appointment,
-  unsupported,
-}
-
-extension TimeExtension on Time {
-  String? description() {
-    switch (this) {
-      case Time.morning:
-        return 'ช่วงเช้า (09:00 - 12:00)';
-      case Time.afternoon:
-        return 'ช่วงบ่าย (13:00 - 16:00)';
-      case Time.custom:
-        return null;
+        return AppointmentMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          packageName: appointment.packageName,
+          availableDates: availableDates,
+          selectedDate: appointment.selectedDate?.let(AvailableDate.fromEntity),
+        );
+      default:
+        throw Exception('Unsupported message type.');
     }
   }
+
+  final String id;
+  final User owner;
+}
+
+class BasicMessage extends Message {
+  BasicMessage({
+    required String id,
+    required User owner,
+    required this.text,
+  }) : super(id: id, owner: owner);
+
+  final String text;
+}
+
+class PhotoMessage extends Message {
+  PhotoMessage({
+    required String id,
+    required User owner,
+    required this.photos,
+  }) : super(id: id, owner: owner);
+
+  final List<String> photos;
+}
+
+class SubscriptionMessage extends Message {
+  SubscriptionMessage({
+    required String id,
+    required User owner,
+    required this.imageUrl,
+    required this.packageName,
+    required this.isPaid,
+  }) : super(id: id, owner: owner);
+
+  final String imageUrl;
+  final String packageName;
+  final bool isPaid;
+}
+
+class AppointmentMessage extends Message {
+  AppointmentMessage({
+    required String id,
+    required User owner,
+    required this.packageName,
+    required this.availableDates,
+    this.selectedDate,
+  }) : super(id: id, owner: owner);
+
+  final String packageName;
+  final List<AvailableDate> availableDates;
+  final AvailableDate? selectedDate;
+}
+
+class AvailableDate {
+  AvailableDate({required this.date, required this.time});
+
+  factory AvailableDate.fromEntity(isar_entity.AvailableDate entity) {
+    return AvailableDate(date: entity.date, time: entity.time);
+  }
+
+  final DateTime date;
+  final Time time;
 }

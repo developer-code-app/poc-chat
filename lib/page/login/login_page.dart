@@ -5,7 +5,7 @@ import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart' as chat_bloc;
 import 'package:poc_chat/page/chat/chat_page.dart' as chat_page;
 import 'package:poc_chat/page/login/bloc/login_page_bloc.dart';
-import 'package:poc_chat/providers/service/isar_service.dart';
+import 'package:poc_chat/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat/repository/room_repository.dart';
 
 class LoginPage extends StatefulWidget {
@@ -86,7 +86,9 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context) => MultiRepositoryProvider(
           providers: [
             RepositoryProvider<RoomRepository>(
-              create: (context) => RoomRepository(isar: IsarService()),
+              create: (context) => RoomRepository(
+                storageProvider: IsarStorageProvider.basic(),
+              ),
             ),
           ],
           child: MultiBlocProvider(

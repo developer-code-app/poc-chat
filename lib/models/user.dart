@@ -1,15 +1,21 @@
-import 'package:isar/isar.dart';
-import 'package:poc_chat/models/room.dart';
+import 'package:poc_chat/providers/isar_storage/entities/isar_user_entity.dart';
 
-part 'user.g.dart';
-
-@collection
 class User {
-  Id id = Isar.autoIncrement;
+  User({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+  });
 
-  late String imageUrl;
-  late String name;
+  factory User.fromEntity(IsarUserEntity entity) {
+    return User(
+      id: entity.id.toString(),
+      name: entity.name,
+      imageUrl: entity.imageUrl,
+    );
+  }
 
-  @Backlink(to: 'members')
-  final rooms = IsarLinks<Room>();
+  final String id;
+  final String name;
+  final String imageUrl;
 }

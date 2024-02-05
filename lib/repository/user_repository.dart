@@ -1,12 +1,21 @@
 import 'package:poc_chat/models/user.dart';
-import 'package:poc_chat/providers/service/isar_service.dart';
+import 'package:poc_chat/providers/isar_storage/entities/isar_user_entity.dart';
+import 'package:poc_chat/providers/isar_storage/isar_storage_provider.dart';
 
 class UserRepository {
-  UserRepository({required this.isar});
+  UserRepository({required this.storageProvider});
 
-  final IsarService isar;
+  final IsarStorageProvider storageProvider;
 
   Future<List<User>> fetchUsers() async {
-    return await isar.fetchUsers();
+    return await storageProvider.user.fetchUsers();
+  }
+
+  Future<void> addUsersMockData() async {
+    return await storageProvider.user.addMockData();
+  }
+
+  Future<void> removeUsersMockDate() async {
+    return await storageProvider.user.removeMockData();
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:poc_chat/models/message.dart';
+import 'package:poc_chat/models/time.dart';
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart';
 
 class ChatPage extends StatefulWidget {
@@ -111,10 +112,7 @@ class _ChatPageState extends State<ChatPage> {
     LoadSuccessState state, {
     required Message message,
   }) {
-    final isOwner = message.owner.value?.id == state.currentUser.id;
-    final text = message.text;
-    final subscription = message.subscription;
-    final appointment = message.appointment;
+    final isOwner = message.owner.id == state.currentUser.id;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -125,18 +123,17 @@ class _ChatPageState extends State<ChatPage> {
               isOwner ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             _buildUser(context, state, message: message),
-            if (message.type == MessageType.basic && text != null)
+            if (message is BasicMessage)
               _buildBasicMessage(context, state, message: message),
-            if (message.type == MessageType.subscription &&
-                subscription != null)
+            if (message is SubscriptionMessage)
               _buildSubscriptionMessage(
                 context,
-                subscription: subscription,
+                message: message,
               ),
-            if (message.type == MessageType.appointment && appointment != null)
+            if (message is AppointmentMessage)
               _buildAppointmentMessage(
                 context,
-                appointment: appointment,
+                message: message,
               ),
           ],
         ),
@@ -147,10 +144,10 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildBasicMessage(
     BuildContext context,
     LoadSuccessState state, {
-    required Message message,
+    required BasicMessage message,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isOwner = message.owner.value?.id == state.currentUser.id;
+    final isOwner = message.owner.id == state.currentUser.id;
 
     return Container(
       decoration: BoxDecoration(
@@ -160,7 +157,7 @@ class _ChatPageState extends State<ChatPage> {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Text(
-          message.text ?? '',
+          message.text,
           style: const TextStyle(fontSize: 16),
         ),
       ),
@@ -169,7 +166,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildSubscriptionMessage(
     BuildContext context, {
-    required Subscription subscription,
+    required SubscriptionMessage message,
   }) {
     return Container(
       width: 160,
@@ -191,9 +188,9 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text(subscription.packageName),
+            child: Text(message.packageName),
           ),
-          if (subscription.isPaid)
+          if (message.isPaid)
             TextButton(onPressed: () {}, child: const Text('ชำระเงินแล้ว'))
           else
             TextButton(onPressed: () {}, child: const Text('ชำระเงิน'))
@@ -204,9 +201,9 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildAppointmentMessage(
     BuildContext context, {
-    required Appointment appointment,
+    required AppointmentMessage message,
   }) {
-    final selectedDate = appointment.selectedDate;
+    final selectedDate = message.selectedDate;
 
     return Container(
       width: 300,
@@ -228,7 +225,7 @@ class _ChatPageState extends State<ChatPage> {
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(appointment.packageName),
+            child: Text(message.packageName),
           ),
           const Divider(),
           const Padding(
@@ -239,7 +236,7 @@ class _ChatPageState extends State<ChatPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               DateFormat('dd MMMM yyyy')
-                  .format(appointment.availableDates.first.date),
+                  .format(message.availableDates.first.date),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -259,7 +256,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
             )
           else
-            ...appointment.availableDates
+            ...message.availableDates
                 .map<Widget>((availableDate) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -292,8 +289,8 @@ class _ChatPageState extends State<ChatPage> {
     final index = messages.indexOf(message);
     final previousMessage = index > 0 ? messages[index - 1] : null;
 
-    if (previousMessage?.owner.value?.id != message.owner.value?.id) {
-      final isOwner = message.owner.value?.id == state.currentUser.id;
+    if (previousMessage?.owner.id != message.owner.id) {
+      final isOwner = message.owner.id == state.currentUser.id;
 
       return !isOwner
           ? Padding(
@@ -310,7 +307,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    message.owner.value?.name ?? '',
+                    message.owner.name,
                     style: const TextStyle(fontSize: 14),
                   ),
                 ],

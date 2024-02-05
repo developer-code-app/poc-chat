@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:poc_chat/models/room.dart';
+import 'package:poc_chat/models/chat_room.dart';
 import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/repository/room_repository.dart';
 

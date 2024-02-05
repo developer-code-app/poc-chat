@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'room.dart';
+part of 'isar_chat_room_entity.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,43 +9,44 @@ part of 'room.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetRoomCollection on Isar {
-  IsarCollection<Room> get rooms => this.collection();
+extension GetIsarChatRoomEntityCollection on Isar {
+  IsarCollection<IsarChatRoomEntity> get isarChatRoomEntitys =>
+      this.collection();
 }
 
-const RoomSchema = CollectionSchema(
-  name: r'Room',
-  id: -1093513927825131211,
+const IsarChatRoomEntitySchema = CollectionSchema(
+  name: r'ChatRoom',
+  id: 3645375135519982771,
   properties: {},
-  estimateSize: _roomEstimateSize,
-  serialize: _roomSerialize,
-  deserialize: _roomDeserialize,
-  deserializeProp: _roomDeserializeProp,
+  estimateSize: _isarChatRoomEntityEstimateSize,
+  serialize: _isarChatRoomEntitySerialize,
+  deserialize: _isarChatRoomEntityDeserialize,
+  deserializeProp: _isarChatRoomEntityDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {
     r'messages': LinkSchema(
-      id: 76165546788160925,
+      id: -1838734289672801517,
       name: r'messages',
       target: r'Message',
       single: false,
     ),
     r'members': LinkSchema(
-      id: -7049341341102959745,
+      id: -1578615771921630991,
       name: r'members',
       target: r'User',
       single: false,
     )
   },
   embeddedSchemas: {},
-  getId: _roomGetId,
-  getLinks: _roomGetLinks,
-  attach: _roomAttach,
+  getId: _isarChatRoomEntityGetId,
+  getLinks: _isarChatRoomEntityGetLinks,
+  attach: _isarChatRoomEntityAttach,
   version: '3.1.0+1',
 );
 
-int _roomEstimateSize(
-  Room object,
+int _isarChatRoomEntityEstimateSize(
+  IsarChatRoomEntity object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -53,24 +54,24 @@ int _roomEstimateSize(
   return bytesCount;
 }
 
-void _roomSerialize(
-  Room object,
+void _isarChatRoomEntitySerialize(
+  IsarChatRoomEntity object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {}
-Room _roomDeserialize(
+IsarChatRoomEntity _isarChatRoomEntityDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Room();
+  final object = IsarChatRoomEntity();
   object.id = id;
   return object;
 }
 
-P _roomDeserializeProp<P>(
+P _isarChatRoomEntityDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -82,30 +83,37 @@ P _roomDeserializeProp<P>(
   }
 }
 
-Id _roomGetId(Room object) {
+Id _isarChatRoomEntityGetId(IsarChatRoomEntity object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _roomGetLinks(Room object) {
+List<IsarLinkBase<dynamic>> _isarChatRoomEntityGetLinks(
+    IsarChatRoomEntity object) {
   return [object.messages, object.members];
 }
 
-void _roomAttach(IsarCollection<dynamic> col, Id id, Room object) {
+void _isarChatRoomEntityAttach(
+    IsarCollection<dynamic> col, Id id, IsarChatRoomEntity object) {
   object.id = id;
-  object.messages.attach(col, col.isar.collection<Message>(), r'messages', id);
-  object.members.attach(col, col.isar.collection<User>(), r'members', id);
+  object.messages
+      .attach(col, col.isar.collection<IsarMessageEntity>(), r'messages', id);
+  object.members
+      .attach(col, col.isar.collection<IsarUserEntity>(), r'members', id);
 }
 
-extension RoomQueryWhereSort on QueryBuilder<Room, Room, QWhere> {
-  QueryBuilder<Room, Room, QAfterWhere> anyId() {
+extension IsarChatRoomEntityQueryWhereSort
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QWhere> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension RoomQueryWhere on QueryBuilder<Room, Room, QWhereClause> {
-  QueryBuilder<Room, Room, QAfterWhereClause> idEqualTo(Id id) {
+extension IsarChatRoomEntityQueryWhere
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QWhereClause> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterWhereClause>
+      idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -114,7 +122,8 @@ extension RoomQueryWhere on QueryBuilder<Room, Room, QWhereClause> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterWhereClause>
+      idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -136,8 +145,8 @@ extension RoomQueryWhere on QueryBuilder<Room, Room, QWhereClause> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterWhereClause>
+      idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -145,8 +154,8 @@ extension RoomQueryWhere on QueryBuilder<Room, Room, QWhereClause> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterWhereClause>
+      idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -154,7 +163,8 @@ extension RoomQueryWhere on QueryBuilder<Room, Room, QWhereClause> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterWhereClause> idBetween(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterWhereClause>
+      idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -171,8 +181,10 @@ extension RoomQueryWhere on QueryBuilder<Room, Room, QWhereClause> {
   }
 }
 
-extension RoomQueryFilter on QueryBuilder<Room, Room, QFilterCondition> {
-  QueryBuilder<Room, Room, QAfterFilterCondition> idEqualTo(Id value) {
+extension IsarChatRoomEntityQueryFilter
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QFilterCondition> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -181,7 +193,8 @@ extension RoomQueryFilter on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -194,7 +207,8 @@ extension RoomQueryFilter on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> idLessThan(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -207,7 +221,8 @@ extension RoomQueryFilter on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> idBetween(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -225,36 +240,41 @@ extension RoomQueryFilter on QueryBuilder<Room, Room, QFilterCondition> {
   }
 }
 
-extension RoomQueryObject on QueryBuilder<Room, Room, QFilterCondition> {}
+extension IsarChatRoomEntityQueryObject
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QFilterCondition> {}
 
-extension RoomQueryLinks on QueryBuilder<Room, Room, QFilterCondition> {
-  QueryBuilder<Room, Room, QAfterFilterCondition> messages(
-      FilterQuery<Message> q) {
+extension IsarChatRoomEntityQueryLinks
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QFilterCondition> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      messages(FilterQuery<IsarMessageEntity> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'messages');
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> messagesLengthEqualTo(
-      int length) {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      messagesLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'messages', length, true, length, true);
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> messagesIsEmpty() {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      messagesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'messages', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> messagesIsNotEmpty() {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      messagesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'messages', 0, false, 999999, true);
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> messagesLengthLessThan(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      messagesLengthLessThan(
     int length, {
     bool include = false,
   }) {
@@ -263,7 +283,8 @@ extension RoomQueryLinks on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> messagesLengthGreaterThan(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      messagesLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
@@ -272,7 +293,8 @@ extension RoomQueryLinks on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> messagesLengthBetween(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      messagesLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -284,32 +306,36 @@ extension RoomQueryLinks on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> members(FilterQuery<User> q) {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      members(FilterQuery<IsarUserEntity> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'members');
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> membersLengthEqualTo(
-      int length) {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      membersLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'members', length, true, length, true);
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> membersIsEmpty() {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      membersIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'members', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> membersIsNotEmpty() {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      membersIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'members', 0, false, 999999, true);
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> membersLengthLessThan(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      membersLengthLessThan(
     int length, {
     bool include = false,
   }) {
@@ -318,7 +344,8 @@ extension RoomQueryLinks on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> membersLengthGreaterThan(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      membersLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
@@ -327,7 +354,8 @@ extension RoomQueryLinks on QueryBuilder<Room, Room, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Room, Room, QAfterFilterCondition> membersLengthBetween(
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      membersLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -340,26 +368,32 @@ extension RoomQueryLinks on QueryBuilder<Room, Room, QFilterCondition> {
   }
 }
 
-extension RoomQuerySortBy on QueryBuilder<Room, Room, QSortBy> {}
+extension IsarChatRoomEntityQuerySortBy
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QSortBy> {}
 
-extension RoomQuerySortThenBy on QueryBuilder<Room, Room, QSortThenBy> {
-  QueryBuilder<Room, Room, QAfterSortBy> thenById() {
+extension IsarChatRoomEntityQuerySortThenBy
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QSortThenBy> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<Room, Room, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 }
 
-extension RoomQueryWhereDistinct on QueryBuilder<Room, Room, QDistinct> {}
+extension IsarChatRoomEntityQueryWhereDistinct
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QDistinct> {}
 
-extension RoomQueryProperty on QueryBuilder<Room, Room, QQueryProperty> {
-  QueryBuilder<Room, int, QQueryOperations> idProperty() {
+extension IsarChatRoomEntityQueryProperty
+    on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QQueryProperty> {
+  QueryBuilder<IsarChatRoomEntity, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });

@@ -7,7 +7,7 @@ class InitialState extends _State {}
 class LoadSuccessState extends _State {
   LoadSuccessState({required this.room, required this.currentUser});
 
-  final Room room;
+  final ChatRoom room;
   final User currentUser;
 }
 

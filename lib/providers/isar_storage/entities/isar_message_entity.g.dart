@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'message.dart';
+part of 'isar_message_entity.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,11 +9,11 @@ part of 'message.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetMessageCollection on Isar {
-  IsarCollection<Message> get messages => this.collection();
+extension GetIsarMessageEntityCollection on Isar {
+  IsarCollection<IsarMessageEntity> get isarMessageEntitys => this.collection();
 }
 
-const MessageSchema = CollectionSchema(
+const IsarMessageEntitySchema = CollectionSchema(
   name: r'Message',
   id: 2463283977299753079,
   properties: {
@@ -43,20 +43,20 @@ const MessageSchema = CollectionSchema(
       id: 4,
       name: r'type',
       type: IsarType.byte,
-      enumMap: _MessagetypeEnumValueMap,
+      enumMap: _IsarMessageEntitytypeEnumValueMap,
     )
   },
-  estimateSize: _messageEstimateSize,
-  serialize: _messageSerialize,
-  deserialize: _messageDeserialize,
-  deserializeProp: _messageDeserializeProp,
+  estimateSize: _isarMessageEntityEstimateSize,
+  serialize: _isarMessageEntitySerialize,
+  deserialize: _isarMessageEntityDeserialize,
+  deserializeProp: _isarMessageEntityDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {
     r'room': LinkSchema(
-      id: -2605204901515739970,
+      id: 5872723517859371968,
       name: r'room',
-      target: r'Room',
+      target: r'ChatRoom',
       single: true,
       linkName: r'messages',
     ),
@@ -72,14 +72,14 @@ const MessageSchema = CollectionSchema(
     r'Appointment': AppointmentSchema,
     r'AvailableDate': AvailableDateSchema
   },
-  getId: _messageGetId,
-  getLinks: _messageGetLinks,
-  attach: _messageAttach,
+  getId: _isarMessageEntityGetId,
+  getLinks: _isarMessageEntityGetLinks,
+  attach: _isarMessageEntityAttach,
   version: '3.1.0+1',
 );
 
-int _messageEstimateSize(
-  Message object,
+int _isarMessageEntityEstimateSize(
+  IsarMessageEntity object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -121,8 +121,8 @@ int _messageEstimateSize(
   return bytesCount;
 }
 
-void _messageSerialize(
-  Message object,
+void _isarMessageEntitySerialize(
+  IsarMessageEntity object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -144,13 +144,13 @@ void _messageSerialize(
   writer.writeByte(offsets[4], object.type.index);
 }
 
-Message _messageDeserialize(
+IsarMessageEntity _isarMessageEntityDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Message();
+  final object = IsarMessageEntity();
   object.appointment = reader.readObjectOrNull<Appointment>(
     offsets[0],
     AppointmentSchema.deserialize,
@@ -164,12 +164,13 @@ Message _messageDeserialize(
     allOffsets,
   );
   object.text = reader.readStringOrNull(offsets[3]);
-  object.type = _MessagetypeValueEnumMap[reader.readByteOrNull(offsets[4])] ??
-      MessageType.basic;
+  object.type =
+      _IsarMessageEntitytypeValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+          MessageType.basic;
   return object;
 }
 
-P _messageDeserializeProp<P>(
+P _isarMessageEntityDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -193,21 +194,22 @@ P _messageDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (_MessagetypeValueEnumMap[reader.readByteOrNull(offset)] ??
+      return (_IsarMessageEntitytypeValueEnumMap[
+              reader.readByteOrNull(offset)] ??
           MessageType.basic) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-const _MessagetypeEnumValueMap = {
+const _IsarMessageEntitytypeEnumValueMap = {
   'basic': 0,
   'photo': 1,
   'subscription': 2,
   'appointment': 3,
   'unsupported': 4,
 };
-const _MessagetypeValueEnumMap = {
+const _IsarMessageEntitytypeValueEnumMap = {
   0: MessageType.basic,
   1: MessageType.photo,
   2: MessageType.subscription,
@@ -215,30 +217,36 @@ const _MessagetypeValueEnumMap = {
   4: MessageType.unsupported,
 };
 
-Id _messageGetId(Message object) {
+Id _isarMessageEntityGetId(IsarMessageEntity object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _messageGetLinks(Message object) {
+List<IsarLinkBase<dynamic>> _isarMessageEntityGetLinks(
+    IsarMessageEntity object) {
   return [object.room, object.owner];
 }
 
-void _messageAttach(IsarCollection<dynamic> col, Id id, Message object) {
+void _isarMessageEntityAttach(
+    IsarCollection<dynamic> col, Id id, IsarMessageEntity object) {
   object.id = id;
-  object.room.attach(col, col.isar.collection<Room>(), r'room', id);
-  object.owner.attach(col, col.isar.collection<User>(), r'owner', id);
+  object.room
+      .attach(col, col.isar.collection<IsarChatRoomEntity>(), r'room', id);
+  object.owner.attach(col, col.isar.collection<IsarUserEntity>(), r'owner', id);
 }
 
-extension MessageQueryWhereSort on QueryBuilder<Message, Message, QWhere> {
-  QueryBuilder<Message, Message, QAfterWhere> anyId() {
+extension IsarMessageEntityQueryWhereSort
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QWhere> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension MessageQueryWhere on QueryBuilder<Message, Message, QWhereClause> {
-  QueryBuilder<Message, Message, QAfterWhereClause> idEqualTo(Id id) {
+extension IsarMessageEntityQueryWhere
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QWhereClause> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterWhereClause>
+      idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -247,7 +255,8 @@ extension MessageQueryWhere on QueryBuilder<Message, Message, QWhereClause> {
     });
   }
 
-  QueryBuilder<Message, Message, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterWhereClause>
+      idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -269,8 +278,8 @@ extension MessageQueryWhere on QueryBuilder<Message, Message, QWhereClause> {
     });
   }
 
-  QueryBuilder<Message, Message, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterWhereClause>
+      idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -278,8 +287,8 @@ extension MessageQueryWhere on QueryBuilder<Message, Message, QWhereClause> {
     });
   }
 
-  QueryBuilder<Message, Message, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterWhereClause>
+      idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -287,7 +296,8 @@ extension MessageQueryWhere on QueryBuilder<Message, Message, QWhereClause> {
     });
   }
 
-  QueryBuilder<Message, Message, QAfterWhereClause> idBetween(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterWhereClause>
+      idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -304,9 +314,10 @@ extension MessageQueryWhere on QueryBuilder<Message, Message, QWhereClause> {
   }
 }
 
-extension MessageQueryFilter
-    on QueryBuilder<Message, Message, QFilterCondition> {
-  QueryBuilder<Message, Message, QAfterFilterCondition> appointmentIsNull() {
+extension IsarMessageEntityQueryFilter
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QFilterCondition> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      appointmentIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'appointment',
@@ -314,7 +325,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> appointmentIsNotNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      appointmentIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'appointment',
@@ -322,7 +334,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -331,7 +344,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -344,7 +358,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> idLessThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -357,7 +372,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> idBetween(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -374,7 +390,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosIsNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'photos',
@@ -382,7 +399,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosIsNotNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'photos',
@@ -390,7 +408,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementEqualTo(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -403,7 +422,7 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition>
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
       photosElementGreaterThan(
     String value, {
     bool include = false,
@@ -419,7 +438,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementLessThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -434,7 +454,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementBetween(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -453,7 +474,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementStartsWith(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -466,7 +488,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementEndsWith(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -479,9 +502,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementContains(
-      String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'photos',
@@ -491,9 +513,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'photos',
@@ -503,7 +524,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosElementIsEmpty() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosElementIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'photos',
@@ -512,7 +534,7 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition>
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
       photosElementIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -522,8 +544,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosLengthEqualTo(
-      int length) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'photos',
@@ -535,7 +557,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosIsEmpty() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'photos',
@@ -547,7 +570,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosIsNotEmpty() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'photos',
@@ -559,7 +583,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosLengthLessThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosLengthLessThan(
     int length, {
     bool include = false,
   }) {
@@ -574,7 +599,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosLengthGreaterThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
@@ -589,7 +615,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> photosLengthBetween(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      photosLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -606,7 +633,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> subscriptionIsNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      subscriptionIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'subscription',
@@ -614,7 +642,7 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition>
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
       subscriptionIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -623,7 +651,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textIsNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'text',
@@ -631,7 +660,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textIsNotNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'text',
@@ -639,7 +669,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textEqualTo(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -652,7 +683,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textGreaterThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -667,7 +699,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textLessThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -682,7 +715,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textBetween(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -701,7 +735,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textStartsWith(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -714,7 +749,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textEndsWith(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -727,9 +763,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textContains(
-      String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'text',
@@ -739,9 +774,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'text',
@@ -751,7 +785,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textIsEmpty() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'text',
@@ -760,7 +795,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> textIsNotEmpty() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      textIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'text',
@@ -769,8 +805,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> typeEqualTo(
-      MessageType value) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      typeEqualTo(MessageType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'type',
@@ -779,7 +815,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> typeGreaterThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      typeGreaterThan(
     MessageType value, {
     bool include = false,
   }) {
@@ -792,7 +829,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> typeLessThan(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      typeLessThan(
     MessageType value, {
     bool include = false,
   }) {
@@ -805,7 +843,8 @@ extension MessageQueryFilter
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> typeBetween(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      typeBetween(
     MessageType lower,
     MessageType upper, {
     bool includeLower = true,
@@ -823,173 +862,190 @@ extension MessageQueryFilter
   }
 }
 
-extension MessageQueryObject
-    on QueryBuilder<Message, Message, QFilterCondition> {
-  QueryBuilder<Message, Message, QAfterFilterCondition> appointment(
-      FilterQuery<Appointment> q) {
+extension IsarMessageEntityQueryObject
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QFilterCondition> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      appointment(FilterQuery<Appointment> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'appointment');
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> subscription(
-      FilterQuery<Subscription> q) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      subscription(FilterQuery<Subscription> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'subscription');
     });
   }
 }
 
-extension MessageQueryLinks
-    on QueryBuilder<Message, Message, QFilterCondition> {
-  QueryBuilder<Message, Message, QAfterFilterCondition> room(
-      FilterQuery<Room> q) {
+extension IsarMessageEntityQueryLinks
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QFilterCondition> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      room(FilterQuery<IsarChatRoomEntity> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'room');
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> roomIsNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      roomIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'room', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> owner(
-      FilterQuery<User> q) {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      owner(FilterQuery<IsarUserEntity> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'owner');
     });
   }
 
-  QueryBuilder<Message, Message, QAfterFilterCondition> ownerIsNull() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      ownerIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'owner', 0, true, 0, true);
     });
   }
 }
 
-extension MessageQuerySortBy on QueryBuilder<Message, Message, QSortBy> {
-  QueryBuilder<Message, Message, QAfterSortBy> sortByText() {
+extension IsarMessageEntityQuerySortBy
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QSortBy> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByText() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'text', Sort.asc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> sortByTextDesc() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByTextDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'text', Sort.desc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> sortByType() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> sortByTypeDesc() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.desc);
     });
   }
 }
 
-extension MessageQuerySortThenBy
-    on QueryBuilder<Message, Message, QSortThenBy> {
-  QueryBuilder<Message, Message, QAfterSortBy> thenById() {
+extension IsarMessageEntityQuerySortThenBy
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QSortThenBy> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> thenByText() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByText() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'text', Sort.asc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> thenByTextDesc() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByTextDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'text', Sort.desc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> thenByType() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
     });
   }
 
-  QueryBuilder<Message, Message, QAfterSortBy> thenByTypeDesc() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.desc);
     });
   }
 }
 
-extension MessageQueryWhereDistinct
-    on QueryBuilder<Message, Message, QDistinct> {
-  QueryBuilder<Message, Message, QDistinct> distinctByPhotos() {
+extension IsarMessageEntityQueryWhereDistinct
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct>
+      distinctByPhotos() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'photos');
     });
   }
 
-  QueryBuilder<Message, Message, QDistinct> distinctByText(
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct> distinctByText(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'text', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Message, Message, QDistinct> distinctByType() {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct>
+      distinctByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'type');
     });
   }
 }
 
-extension MessageQueryProperty
-    on QueryBuilder<Message, Message, QQueryProperty> {
-  QueryBuilder<Message, int, QQueryOperations> idProperty() {
+extension IsarMessageEntityQueryProperty
+    on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QQueryProperty> {
+  QueryBuilder<IsarMessageEntity, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<Message, Appointment?, QQueryOperations> appointmentProperty() {
+  QueryBuilder<IsarMessageEntity, Appointment?, QQueryOperations>
+      appointmentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'appointment');
     });
   }
 
-  QueryBuilder<Message, List<String>?, QQueryOperations> photosProperty() {
+  QueryBuilder<IsarMessageEntity, List<String>?, QQueryOperations>
+      photosProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'photos');
     });
   }
 
-  QueryBuilder<Message, Subscription?, QQueryOperations>
+  QueryBuilder<IsarMessageEntity, Subscription?, QQueryOperations>
       subscriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'subscription');
     });
   }
 
-  QueryBuilder<Message, String?, QQueryOperations> textProperty() {
+  QueryBuilder<IsarMessageEntity, String?, QQueryOperations> textProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'text');
     });
   }
 
-  QueryBuilder<Message, MessageType, QQueryOperations> typeProperty() {
+  QueryBuilder<IsarMessageEntity, MessageType, QQueryOperations>
+      typeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'type');
     });
