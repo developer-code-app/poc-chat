@@ -21,3 +21,9 @@ class SendMessageEvent extends _Event {
 
   final String text;
 }
+
+class MessageUpdatedEvent extends _Event {
+  MessageUpdatedEvent({required this.message});
+
+  final Message message;
+}
