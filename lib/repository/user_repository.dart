@@ -1,5 +1,4 @@
 import 'package:poc_chat/models/user.dart';
-import 'package:poc_chat/providers/isar_storage/entities/isar_user_entity.dart';
 import 'package:poc_chat/providers/isar_storage/isar_storage_provider.dart';
 
 class UserRepository {

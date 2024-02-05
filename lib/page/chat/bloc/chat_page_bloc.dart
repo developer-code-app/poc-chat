@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat/models/chat_room.dart';
+import 'package:poc_chat/models/message.dart';
 import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/repository/room_repository.dart';
 
@@ -18,6 +19,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     on<DataLoadedEvent>(_mapDataLoadedToState);
     on<ErrorOccurredEvent>(_mapErrorOccurredToState);
     on<SendMessageEvent>(_mapSendMessageToState);
+    on<MessageUpdatedEvent>(_onMessageUpdatedEvent);
   }
 
   final RoomRepository repository;
@@ -53,5 +55,26 @@ class ChatPageBloc extends Bloc<_Event, _State> {
   Future<void> _mapSendMessageToState(
     SendMessageEvent event,
     Emitter emit,
-  ) async {}
+  ) async {
+    repository
+        .sendMessage(text: event.text, roomId: '1', userId: user.id)
+        .then((message) => add(MessageUpdatedEvent(message: message)));
+  }
+
+  Future<void> _onMessageUpdatedEvent(
+    MessageUpdatedEvent event,
+    Emitter emit,
+  ) async {
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      add(
+        DataLoadedEvent(
+          room: state.room.copyWith(
+            messages: state.room.messages..add(event.message),
+          ),
+        ),
+      );
+    }
+  }
 }

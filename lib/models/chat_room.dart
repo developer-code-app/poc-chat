@@ -17,6 +17,14 @@ class ChatRoom {
     );
   }
 
+  ChatRoom copyWith({List<Message>? messages}) {
+    return ChatRoom(
+      id: id,
+      messages: messages ?? this.messages,
+      members: members,
+    );
+  }
+
   final String id;
   final List<Message> messages;
   final List<User> members;
