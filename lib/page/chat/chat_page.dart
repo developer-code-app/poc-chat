@@ -15,16 +15,30 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final textEditingController = TextEditingController();
+  final scrollController = ScrollController();
+
+  void _onMessageSubmitted() {
+    final bloc = context.read<ChatPageBloc>();
+
+    bloc.add(SendMessageEvent(textEditingController.text));
+
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+
+    textEditingController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocBuilder<ChatPageBloc, ChatPageState>(builder: (context, state) {
-      final bloc = context.read<ChatPageBloc>();
-
       if (state is LoadSuccessState) {
         return Scaffold(
+          resizeToAvoidBottomInset: true,
           appBar: AppBar(
             backgroundColor: colorScheme.inversePrimary,
             title: Text('Hello, ${state.currentUser.name}'),
@@ -33,10 +47,19 @@ class _ChatPageState extends State<ChatPage> {
           body: Column(
             children: [
               Expanded(
-                child: ListView(
-                  children: state.room.messages.map((message) {
-                    return _buildMessage(context, state, message: message);
-                  }).toList(),
+                child: GestureDetector(
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ListView(
+                      controller: scrollController,
+                      shrinkWrap: true,
+                      reverse: true,
+                      children: state.room.messages.reversed.map((message) {
+                        return _buildMessage(context, state, message: message);
+                      }).toList(),
+                    ),
+                  ),
                 ),
               ),
               Container(
@@ -83,9 +106,7 @@ class _ChatPageState extends State<ChatPage> {
                         width: 50,
                         height: 50,
                         child: GestureDetector(
-                          onTap: () => bloc.add(
-                            SendMessageEvent(textEditingController.text),
-                          ),
+                          onTap: _onMessageSubmitted,
                           child: Icon(
                             Icons.send,
                             color: Colors.grey.shade700,
