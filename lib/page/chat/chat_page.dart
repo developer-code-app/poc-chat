@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:poc_chat/models/message.dart';
 import 'package:poc_chat/models/time.dart';
+import 'package:poc_chat/page/action_sheet.dart' as action_sheet;
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart';
 
 class ChatPage extends StatefulWidget {
@@ -42,6 +43,34 @@ class _ChatPageState extends State<ChatPage> {
           appBar: AppBar(
             backgroundColor: colorScheme.inversePrimary,
             title: Text('Hello, ${state.currentUser.name}'),
+            actions: [
+              if (state.currentUser.id == '1')
+                TextButton(
+                  onPressed: () {
+                    action_sheet.ActionSheet(
+                      title: 'Share',
+                      actions: [
+                        action_sheet.Action(
+                          'Subscription',
+                          () {},
+                        ),
+                        action_sheet.Action(
+                          'Appointment',
+                          () {},
+                        )
+                      ],
+                      cancel: action_sheet.Action(
+                        'Cancel',
+                        () {},
+                      ),
+                    ).show(context);
+                  },
+                  child: Icon(
+                    Icons.share,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+            ],
           ),
           backgroundColor: Colors.grey.shade100,
           body: Column(
