@@ -1,3 +1,4 @@
+import 'package:dfunc/dfunc.dart';
 import 'package:isar/isar.dart';
 import 'package:poc_chat/models/message_type.dart';
 import 'package:poc_chat/models/time.dart';
@@ -31,81 +32,98 @@ class IsarUserService {
         ..time = Time.afternoon,
     ];
     final users = ['SC Asset', 'Pattarapon']
-        .map((name) => IsarUserEntity()
+        .mapIndexed((index, name) => IsarUserEntity()
+          ..userId = (index + 1).toString()
           ..name = name
           ..imageUrl = '')
         .toList();
-    final room = IsarChatRoomEntity();
+    final room = IsarChatRoomEntity()..roomId = '1';
     final messages = [
       IsarMessageEntity()
+        ..messageId = '1'
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text =
             'สวัสดีค่ะ น้ำฝนนะคะ ตามที่เราเคยคุยกันไว้เรื่องติดตั้งประตูไฟฟ้า คุณรวิทัตได้เลือกแบบสลิง ที่ราคา 33,000 บาท ใช่มัยคะ',
       IsarMessageEntity()
+        ..messageId = '2'
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'ใช่ครับผม',
       IsarMessageEntity()
+        ..messageId = '3'
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'โอเคค่ะ ฝนรบกวนคุณรวิทัตชำระเงินแพ็กเกจนี้ให้หน่อยนะคะ',
       IsarMessageEntity()
+        ..messageId = '4'
         ..owner.value = users.first
         ..type = MessageType.subscription
-        ..subscription = (Subscription()
+        ..package = (SubscriptionPackage()
           ..imageUrl = ''
-          ..packageName = packageName
-          ..isPaid = false),
+          ..name = packageName
+          ..isPurchased = false),
       IsarMessageEntity()
+        ..messageId = '5'
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'สักครู่นะครับ กำลังชำระเงินครับ',
       IsarMessageEntity()
+        ..messageId = '6'
         ..owner.value = users.last
         ..type = MessageType.subscription
-        ..subscription = (Subscription()
+        ..package = (SubscriptionPackage()
           ..imageUrl = ''
-          ..packageName = packageName
-          ..isPaid = true),
+          ..name = packageName
+          ..isPurchased = true),
       IsarMessageEntity()
+        ..messageId = '7'
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'เรียบร้อยครับผม',
       IsarMessageEntity()
+        ..messageId = '8'
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text =
             'ขอบคุณค่ะ สะดวกให้เข้าไปติดตั้งวันไหนบ้างคะใกล้สุดจะมี 1/11, 5/11 ค่ะ',
       IsarMessageEntity()
+        ..messageId = '9'
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'ผมสะดวก วันที่ 1/11 ครับ',
       IsarMessageEntity()
+        ..messageId = '10'
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'ได้เลยค่ะ เดี๋ยวฝนจะทำนัดหมายให้นะคะ',
       IsarMessageEntity()
+        ..messageId = '11'
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'รบกวนคุณรวิทัต เลือกช่วงเวลาให้ฝนหน่อยค่ะ',
       IsarMessageEntity()
+        ..messageId = '12'
         ..owner.value = users.first
         ..type = MessageType.appointment
         ..appointment = (Appointment()
           ..packageName = packageName
           ..availableDates = availableDates),
       IsarMessageEntity()
+        ..messageId = '13'
         ..owner.value = users.last
         ..type = MessageType.basic
         ..text = 'ตามนี้เลยครับผม',
       IsarMessageEntity()
+        ..messageId = '14'
         ..owner.value = users.last
         ..type = MessageType.appointment
         ..appointment = (Appointment()
           ..packageName = packageName
-          ..availableDates = availableDates),
+          ..availableDates = availableDates
+          ..selectedDate = availableDates.last),
       IsarMessageEntity()
+        ..messageId = '15'
         ..owner.value = users.first
         ..type = MessageType.basic
         ..text = 'รับทราบค่ะ ขอบคุณค่ะ',

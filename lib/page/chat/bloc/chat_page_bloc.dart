@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat/models/chat_room.dart';
 import 'package:poc_chat/models/message.dart';
+import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/repository/room_repository.dart';
 
@@ -18,19 +19,21 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     on<StartedEvent>(_mapStartedToState);
     on<DataLoadedEvent>(_mapDataLoadedToState);
     on<ErrorOccurredEvent>(_mapErrorOccurredToState);
-    on<SendMessageEvent>(_mapSendMessageToState);
+    on<BasicMessageSentEvent>(_mapBasicMessageSentToState);
+    on<ShareSubscriptionPackageEvent>(_mapShareSubscriptionPackageToState);
     on<MessageUpdatedEvent>(_onMessageUpdatedEvent);
   }
 
   final RoomRepository repository;
   final User user;
+  static int roomId = 1;
 
   Future<void> _mapStartedToState(
     StartedEvent event,
     Emitter emit,
   ) async {
     try {
-      final room = await repository.fetchRoom(roomId: 1);
+      final room = await repository.fetchRoom(roomId: roomId);
 
       add(DataLoadedEvent(room: room));
     } on Exception catch (error) {
@@ -52,13 +55,33 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     emit(LoadFailureState(event.error));
   }
 
-  Future<void> _mapSendMessageToState(
-    SendMessageEvent event,
+  Future<void> _mapBasicMessageSentToState(
+    BasicMessageSentEvent event,
     Emitter emit,
   ) async {
     repository
-        .sendMessage(text: event.text, roomId: '1', userId: user.id)
-        .then((message) => add(MessageUpdatedEvent(message: message)));
+        .sendBasicMessage(
+          text: event.text,
+          roomId: roomId.toString(),
+          userId: user.id,
+        )
+        .then(MessageUpdatedEvent.new)
+        .then(add);
+  }
+
+  Future<void> _mapShareSubscriptionPackageToState(
+    ShareSubscriptionPackageEvent event,
+    Emitter emit,
+  ) async {
+    repository
+        .shareSubscriptionPackageMessage(
+          package: event.package,
+          isPurchased: event.isPurchased,
+          roomId: roomId.toString(),
+          userId: user.id,
+        )
+        .then(MessageUpdatedEvent.new)
+        .then(add);
   }
 
   Future<void> _onMessageUpdatedEvent(

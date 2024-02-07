@@ -10,12 +10,14 @@ part 'isar_message_entity.g.dart';
 class IsarMessageEntity {
   Id id = Isar.autoIncrement;
 
+  late String messageId;
+
   @enumerated
   late MessageType type;
 
   String? text;
   List<String>? photos;
-  Subscription? subscription;
+  SubscriptionPackage? package;
   Appointment? appointment;
 
   @Backlink(to: 'messages')
@@ -24,10 +26,10 @@ class IsarMessageEntity {
 }
 
 @embedded
-class Subscription {
+class SubscriptionPackage {
   late String imageUrl;
-  late String packageName;
-  late bool isPaid;
+  late String name;
+  late bool isPurchased;
 }
 
 @embedded

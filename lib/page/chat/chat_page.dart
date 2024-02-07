@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:poc_chat/models/message.dart';
+import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/models/time.dart';
 import 'package:poc_chat/page/action_sheet.dart' as action_sheet;
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart';
@@ -17,11 +18,16 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final textEditingController = TextEditingController();
   final scrollController = ScrollController();
+  final package = SubscriptionPackage(
+    id: '1',
+    thumbnailUrl: 'thumbnailUrl',
+    name: 'มอเตอร์ประตูรีโมท HomeXpert ประตูบานซ้อน 2 ติดตั้งแบบสลิง...',
+  );
 
   void _onMessageSubmitted() {
     final bloc = context.read<ChatPageBloc>();
 
-    bloc.add(SendMessageEvent(textEditingController.text));
+    bloc.add(BasicMessageSentEvent(textEditingController.text));
 
     scrollController.animateTo(
       0,
@@ -37,6 +43,8 @@ class _ChatPageState extends State<ChatPage> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocBuilder<ChatPageBloc, ChatPageState>(builder: (context, state) {
+      final bloc = context.read<ChatPageBloc>();
+
       if (state is LoadSuccessState) {
         return Scaffold(
           resizeToAvoidBottomInset: true,
@@ -52,7 +60,12 @@ class _ChatPageState extends State<ChatPage> {
                       actions: [
                         action_sheet.Action(
                           'Subscription',
-                          () {},
+                          () => bloc.add(
+                            ShareSubscriptionPackageEvent(
+                              package: package,
+                              isPurchased: false,
+                            ),
+                          ),
                         ),
                         action_sheet.Action(
                           'Appointment',
@@ -175,7 +188,7 @@ class _ChatPageState extends State<ChatPage> {
             _buildUser(context, state, message: message),
             if (message is BasicMessage)
               _buildBasicMessage(context, state, message: message),
-            if (message is SubscriptionMessage)
+            if (message is SubscriptionPackageMessage)
               _buildSubscriptionMessage(
                 context,
                 message: message,
@@ -216,8 +229,10 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildSubscriptionMessage(
     BuildContext context, {
-    required SubscriptionMessage message,
+    required SubscriptionPackageMessage message,
   }) {
+    final bloc = context.read<ChatPageBloc>();
+
     return Container(
       width: 160,
       decoration: BoxDecoration(
@@ -238,12 +253,20 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text(message.packageName),
+            child: Text(message.name),
           ),
-          if (message.isPaid)
+          if (message.isPurchased)
             TextButton(onPressed: () {}, child: const Text('ชำระเงินแล้ว'))
           else
-            TextButton(onPressed: () {}, child: const Text('ชำระเงิน'))
+            TextButton(
+              onPressed: () => bloc.add(
+                ShareSubscriptionPackageEvent(
+                  package: package,
+                  isPurchased: true,
+                ),
+              ),
+              child: const Text('ชำระเงิน'),
+            )
         ],
       ),
     );

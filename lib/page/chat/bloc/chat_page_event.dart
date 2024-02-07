@@ -16,14 +16,24 @@ class ErrorOccurredEvent extends _Event {
   final Exception error;
 }
 
-class SendMessageEvent extends _Event {
-  SendMessageEvent(this.text);
+class BasicMessageSentEvent extends _Event {
+  BasicMessageSentEvent(this.text);
 
   final String text;
 }
 
 class MessageUpdatedEvent extends _Event {
-  MessageUpdatedEvent({required this.message});
+  MessageUpdatedEvent(this.message);
 
   final Message message;
+}
+
+class ShareSubscriptionPackageEvent extends _Event {
+  ShareSubscriptionPackageEvent({
+    required this.package,
+    required this.isPurchased,
+  });
+
+  final SubscriptionPackage package;
+  final bool isPurchased;
 }

@@ -29,15 +29,14 @@ abstract class Message {
           photos: entity.photos.getOrThrowException(invalidException),
         );
       case MessageType.subscription:
-        final subscription =
-            entity.subscription.getOrThrowException(invalidException);
+        final package = entity.package.getOrThrowException(invalidException);
 
-        return SubscriptionMessage(
+        return SubscriptionPackageMessage(
           id: entity.id.toString(),
           owner: owner,
-          imageUrl: subscription.imageUrl,
-          packageName: subscription.packageName,
-          isPaid: subscription.isPaid,
+          imageUrl: package.imageUrl,
+          name: package.name,
+          isPurchased: package.isPurchased,
         );
       case MessageType.appointment:
         final appointment =
@@ -81,18 +80,18 @@ class PhotoMessage extends Message {
   final List<String> photos;
 }
 
-class SubscriptionMessage extends Message {
-  SubscriptionMessage({
+class SubscriptionPackageMessage extends Message {
+  SubscriptionPackageMessage({
     required String id,
     required User owner,
     required this.imageUrl,
-    required this.packageName,
-    required this.isPaid,
+    required this.name,
+    required this.isPurchased,
   }) : super(id: id, owner: owner);
 
   final String imageUrl;
-  final String packageName;
-  final bool isPaid;
+  final String name;
+  final bool isPurchased;
 }
 
 class AppointmentMessage extends Message {

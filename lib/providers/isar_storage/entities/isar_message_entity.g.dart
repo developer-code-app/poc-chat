@@ -14,8 +14,8 @@ extension GetIsarMessageEntityCollection on Isar {
 }
 
 const IsarMessageEntitySchema = CollectionSchema(
-  name: r'Message',
-  id: 2463283977299753079,
+  name: r'IsarMessageEntity',
+  id: 3632493539182600996,
   properties: {
     r'appointment': PropertySchema(
       id: 0,
@@ -23,24 +23,29 @@ const IsarMessageEntitySchema = CollectionSchema(
       type: IsarType.object,
       target: r'Appointment',
     ),
-    r'photos': PropertySchema(
+    r'messageId': PropertySchema(
       id: 1,
+      name: r'messageId',
+      type: IsarType.string,
+    ),
+    r'package': PropertySchema(
+      id: 2,
+      name: r'package',
+      type: IsarType.object,
+      target: r'SubscriptionPackage',
+    ),
+    r'photos': PropertySchema(
+      id: 3,
       name: r'photos',
       type: IsarType.stringList,
     ),
-    r'subscription': PropertySchema(
-      id: 2,
-      name: r'subscription',
-      type: IsarType.object,
-      target: r'Subscription',
-    ),
     r'text': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'text',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'type',
       type: IsarType.byte,
       enumMap: _IsarMessageEntitytypeEnumValueMap,
@@ -54,21 +59,21 @@ const IsarMessageEntitySchema = CollectionSchema(
   indexes: {},
   links: {
     r'room': LinkSchema(
-      id: 5872723517859371968,
+      id: -194908948596935644,
       name: r'room',
-      target: r'ChatRoom',
+      target: r'IsarChatRoomEntity',
       single: true,
       linkName: r'messages',
     ),
     r'owner': LinkSchema(
-      id: 5458457785842014972,
+      id: -4908615155690482555,
       name: r'owner',
-      target: r'User',
+      target: r'IsarUserEntity',
       single: true,
     )
   },
   embeddedSchemas: {
-    r'Subscription': SubscriptionSchema,
+    r'SubscriptionPackage': SubscriptionPackageSchema,
     r'Appointment': AppointmentSchema,
     r'AvailableDate': AvailableDateSchema
   },
@@ -92,6 +97,15 @@ int _isarMessageEntityEstimateSize(
               value, allOffsets[Appointment]!, allOffsets);
     }
   }
+  bytesCount += 3 + object.messageId.length * 3;
+  {
+    final value = object.package;
+    if (value != null) {
+      bytesCount += 3 +
+          SubscriptionPackageSchema.estimateSize(
+              value, allOffsets[SubscriptionPackage]!, allOffsets);
+    }
+  }
   {
     final list = object.photos;
     if (list != null) {
@@ -102,14 +116,6 @@ int _isarMessageEntityEstimateSize(
           bytesCount += value.length * 3;
         }
       }
-    }
-  }
-  {
-    final value = object.subscription;
-    if (value != null) {
-      bytesCount += 3 +
-          SubscriptionSchema.estimateSize(
-              value, allOffsets[Subscription]!, allOffsets);
     }
   }
   {
@@ -133,15 +139,16 @@ void _isarMessageEntitySerialize(
     AppointmentSchema.serialize,
     object.appointment,
   );
-  writer.writeStringList(offsets[1], object.photos);
-  writer.writeObject<Subscription>(
+  writer.writeString(offsets[1], object.messageId);
+  writer.writeObject<SubscriptionPackage>(
     offsets[2],
     allOffsets,
-    SubscriptionSchema.serialize,
-    object.subscription,
+    SubscriptionPackageSchema.serialize,
+    object.package,
   );
-  writer.writeString(offsets[3], object.text);
-  writer.writeByte(offsets[4], object.type.index);
+  writer.writeStringList(offsets[3], object.photos);
+  writer.writeString(offsets[4], object.text);
+  writer.writeByte(offsets[5], object.type.index);
 }
 
 IsarMessageEntity _isarMessageEntityDeserialize(
@@ -157,15 +164,16 @@ IsarMessageEntity _isarMessageEntityDeserialize(
     allOffsets,
   );
   object.id = id;
-  object.photos = reader.readStringList(offsets[1]);
-  object.subscription = reader.readObjectOrNull<Subscription>(
+  object.messageId = reader.readString(offsets[1]);
+  object.package = reader.readObjectOrNull<SubscriptionPackage>(
     offsets[2],
-    SubscriptionSchema.deserialize,
+    SubscriptionPackageSchema.deserialize,
     allOffsets,
   );
-  object.text = reader.readStringOrNull(offsets[3]);
+  object.photos = reader.readStringList(offsets[3]);
+  object.text = reader.readStringOrNull(offsets[4]);
   object.type =
-      _IsarMessageEntitytypeValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+      _IsarMessageEntitytypeValueEnumMap[reader.readByteOrNull(offsets[5])] ??
           MessageType.basic;
   return object;
 }
@@ -184,16 +192,18 @@ P _isarMessageEntityDeserializeProp<P>(
         allOffsets,
       )) as P;
     case 1:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readObjectOrNull<Subscription>(
+      return (reader.readObjectOrNull<SubscriptionPackage>(
         offset,
-        SubscriptionSchema.deserialize,
+        SubscriptionPackageSchema.deserialize,
         allOffsets,
       )) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
       return (_IsarMessageEntitytypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           MessageType.basic) as P;
@@ -386,6 +396,160 @@ extension IsarMessageEntityQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'messageId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'messageId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'messageId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'messageId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'messageId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'messageId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'messageId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'messageId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'messageId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      messageIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'messageId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      packageIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'package',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      packageIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'package',
       ));
     });
   }
@@ -634,24 +798,6 @@ extension IsarMessageEntityQueryFilter
   }
 
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
-      subscriptionIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'subscription',
-      ));
-    });
-  }
-
-  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
-      subscriptionIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'subscription',
-      ));
-    });
-  }
-
-  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
       textIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -872,9 +1018,9 @@ extension IsarMessageEntityQueryObject
   }
 
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
-      subscription(FilterQuery<Subscription> q) {
+      package(FilterQuery<SubscriptionPackage> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'subscription');
+      return query.object(q, r'package');
     });
   }
 }
@@ -912,6 +1058,20 @@ extension IsarMessageEntityQueryLinks
 
 extension IsarMessageEntityQuerySortBy
     on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QSortBy> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByMessageId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByMessageIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageId', Sort.desc);
+    });
+  }
+
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
       sortByText() {
     return QueryBuilder.apply(this, (query) {
@@ -957,6 +1117,20 @@ extension IsarMessageEntityQuerySortThenBy
   }
 
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByMessageId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByMessageIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
       thenByText() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'text', Sort.asc);
@@ -987,6 +1161,13 @@ extension IsarMessageEntityQuerySortThenBy
 
 extension IsarMessageEntityQueryWhereDistinct
     on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct>
+      distinctByMessageId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'messageId', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct>
       distinctByPhotos() {
     return QueryBuilder.apply(this, (query) {
@@ -1024,17 +1205,24 @@ extension IsarMessageEntityQueryProperty
     });
   }
 
+  QueryBuilder<IsarMessageEntity, String, QQueryOperations>
+      messageIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'messageId');
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, SubscriptionPackage?, QQueryOperations>
+      packageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'package');
+    });
+  }
+
   QueryBuilder<IsarMessageEntity, List<String>?, QQueryOperations>
       photosProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'photos');
-    });
-  }
-
-  QueryBuilder<IsarMessageEntity, Subscription?, QQueryOperations>
-      subscriptionProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'subscription');
     });
   }
 
@@ -1059,68 +1247,68 @@ extension IsarMessageEntityQueryProperty
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-const SubscriptionSchema = Schema(
-  name: r'Subscription',
-  id: -3426239935225026138,
+const SubscriptionPackageSchema = Schema(
+  name: r'SubscriptionPackage',
+  id: 7687732856327313764,
   properties: {
     r'imageUrl': PropertySchema(
       id: 0,
       name: r'imageUrl',
       type: IsarType.string,
     ),
-    r'isPaid': PropertySchema(
+    r'isPurchased': PropertySchema(
       id: 1,
-      name: r'isPaid',
+      name: r'isPurchased',
       type: IsarType.bool,
     ),
-    r'packageName': PropertySchema(
+    r'name': PropertySchema(
       id: 2,
-      name: r'packageName',
+      name: r'name',
       type: IsarType.string,
     )
   },
-  estimateSize: _subscriptionEstimateSize,
-  serialize: _subscriptionSerialize,
-  deserialize: _subscriptionDeserialize,
-  deserializeProp: _subscriptionDeserializeProp,
+  estimateSize: _subscriptionPackageEstimateSize,
+  serialize: _subscriptionPackageSerialize,
+  deserialize: _subscriptionPackageDeserialize,
+  deserializeProp: _subscriptionPackageDeserializeProp,
 );
 
-int _subscriptionEstimateSize(
-  Subscription object,
+int _subscriptionPackageEstimateSize(
+  SubscriptionPackage object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.imageUrl.length * 3;
-  bytesCount += 3 + object.packageName.length * 3;
+  bytesCount += 3 + object.name.length * 3;
   return bytesCount;
 }
 
-void _subscriptionSerialize(
-  Subscription object,
+void _subscriptionPackageSerialize(
+  SubscriptionPackage object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.imageUrl);
-  writer.writeBool(offsets[1], object.isPaid);
-  writer.writeString(offsets[2], object.packageName);
+  writer.writeBool(offsets[1], object.isPurchased);
+  writer.writeString(offsets[2], object.name);
 }
 
-Subscription _subscriptionDeserialize(
+SubscriptionPackage _subscriptionPackageDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Subscription();
+  final object = SubscriptionPackage();
   object.imageUrl = reader.readString(offsets[0]);
-  object.isPaid = reader.readBool(offsets[1]);
-  object.packageName = reader.readString(offsets[2]);
+  object.isPurchased = reader.readBool(offsets[1]);
+  object.name = reader.readString(offsets[2]);
   return object;
 }
 
-P _subscriptionDeserializeProp<P>(
+P _subscriptionPackageDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -1138,9 +1326,9 @@ P _subscriptionDeserializeProp<P>(
   }
 }
 
-extension SubscriptionQueryFilter
-    on QueryBuilder<Subscription, Subscription, QFilterCondition> {
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+extension SubscriptionPackageQueryFilter on QueryBuilder<SubscriptionPackage,
+    SubscriptionPackage, QFilterCondition> {
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1154,7 +1342,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlGreaterThan(
     String value, {
     bool include = false,
@@ -1170,7 +1358,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlLessThan(
     String value, {
     bool include = false,
@@ -1186,7 +1374,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlBetween(
     String lower,
     String upper, {
@@ -1206,7 +1394,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -1220,7 +1408,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -1234,7 +1422,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -1245,7 +1433,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -1256,7 +1444,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1266,7 +1454,7 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
       imageUrlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -1276,32 +1464,32 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition> isPaidEqualTo(
-      bool value) {
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      isPurchasedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isPaid',
+        property: r'isPurchased',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameEqualTo(
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'packageName',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameGreaterThan(
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1309,15 +1497,15 @@ extension SubscriptionQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'packageName',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameLessThan(
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1325,15 +1513,15 @@ extension SubscriptionQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'packageName',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameBetween(
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -1342,7 +1530,7 @@ extension SubscriptionQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'packageName',
+        property: r'name',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1352,79 +1540,79 @@ extension SubscriptionQueryFilter
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameStartsWith(
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'packageName',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameEndsWith(
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'packageName',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'packageName',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'packageName',
+        property: r'name',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameIsEmpty() {
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'packageName',
+        property: r'name',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Subscription, Subscription, QAfterFilterCondition>
-      packageNameIsNotEmpty() {
+  QueryBuilder<SubscriptionPackage, SubscriptionPackage, QAfterFilterCondition>
+      nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'packageName',
+        property: r'name',
         value: '',
       ));
     });
   }
 }
 
-extension SubscriptionQueryObject
-    on QueryBuilder<Subscription, Subscription, QFilterCondition> {}
+extension SubscriptionPackageQueryObject on QueryBuilder<SubscriptionPackage,
+    SubscriptionPackage, QFilterCondition> {}
 
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
