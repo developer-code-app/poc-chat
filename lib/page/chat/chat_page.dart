@@ -35,6 +35,7 @@ class _ChatPageState extends State<ChatPage> {
       curve: Curves.easeInOut,
     );
 
+    FocusScope.of(context).unfocus();
     textEditingController.clear();
   }
 
@@ -145,8 +146,8 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       const SizedBox(width: 8),
                       SizedBox(
-                        width: 50,
-                        height: 50,
+                        width: 80,
+                        height: 80,
                         child: GestureDetector(
                           onTap: _onMessageSubmitted,
                           child: Icon(

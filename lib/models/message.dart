@@ -7,7 +7,10 @@ import 'package:poc_chat/providers/isar_storage/entities/isar_message_entity.dar
     as isar_entity;
 
 abstract class Message {
-  Message({required this.id, required this.owner});
+  Message({
+    required this.id,
+    required this.owner,
+  });
 
   factory Message.fromEntity(isar_entity.IsarMessageEntity entity) {
     final invalidException = Exception('Invalid response spec.');
@@ -62,32 +65,32 @@ abstract class Message {
 
 class BasicMessage extends Message {
   BasicMessage({
-    required String id,
-    required User owner,
+    required super.id,
+    required super.owner,
     required this.text,
-  }) : super(id: id, owner: owner);
+  });
 
   final String text;
 }
 
 class PhotoMessage extends Message {
   PhotoMessage({
-    required String id,
-    required User owner,
+    required super.id,
+    required super.owner,
     required this.photos,
-  }) : super(id: id, owner: owner);
+  });
 
   final List<String> photos;
 }
 
 class SubscriptionPackageMessage extends Message {
   SubscriptionPackageMessage({
-    required String id,
-    required User owner,
+    required super.id,
+    required super.owner,
     required this.imageUrl,
     required this.name,
     required this.isPurchased,
-  }) : super(id: id, owner: owner);
+  });
 
   final String imageUrl;
   final String name;
@@ -96,12 +99,12 @@ class SubscriptionPackageMessage extends Message {
 
 class AppointmentMessage extends Message {
   AppointmentMessage({
-    required String id,
-    required User owner,
+    required super.id,
+    required super.owner,
     required this.packageName,
     required this.availableDates,
     this.selectedDate,
-  }) : super(id: id, owner: owner);
+  });
 
   final String packageName;
   final List<AvailableDate> availableDates;

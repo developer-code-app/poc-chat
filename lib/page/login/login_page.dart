@@ -97,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                 create: (context) => chat_bloc.ChatPageBloc(
                   repository: context.read<RoomRepository>(),
                   user: user,
+                  chatRoomId: '1',
                 )..add(chat_bloc.StartedEvent()),
               ),
             ],

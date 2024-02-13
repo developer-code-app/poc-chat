@@ -5,9 +5,9 @@ abstract class ChatPageEvent {}
 class StartedEvent extends _Event {}
 
 class DataLoadedEvent extends _Event {
-  DataLoadedEvent({required this.room});
+  DataLoadedEvent({required this.chatRoom});
 
-  final ChatRoom room;
+  final ChatRoom chatRoom;
 }
 
 class ErrorOccurredEvent extends _Event {

@@ -1,40 +1,26 @@
 import 'package:poc_chat/models/chat_room.dart';
 import 'package:poc_chat/models/message.dart';
-import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/providers/isar_storage/isar_storage_provider.dart';
+import 'package:poc_chat/providers/isar_storage/requests/isar_save_message_request.dart';
 
 class RoomRepository {
   RoomRepository({required this.storageProvider});
 
   final IsarStorageProvider storageProvider;
 
-  Future<ChatRoom> fetchRoom({required int roomId}) async {
-    return storageProvider.chatRoom.fetchRoom(roomId: roomId);
+  Future<ChatRoom> findChatRoom({required String chatRoomId}) async {
+    return storageProvider.chatRoom.findChatRoom(chatRoomId: chatRoomId);
   }
 
-  Future<Message> sendBasicMessage({
-    required String text,
-    required String roomId,
-    required String userId,
+  Future<Message> saveMessage({
+    required Message message,
+    required String chatRoomId,
   }) {
-    return storageProvider.chatRoom.sendBasicMessage(
-      text: text,
-      roomId: roomId,
-      userId: userId,
+    final request = IsarSaveMessageRequest.fromModel(
+      message: message,
+      chatRoomId: chatRoomId,
     );
-  }
 
-  Future<Message> shareSubscriptionPackageMessage({
-    required SubscriptionPackage package,
-    required bool isPurchased,
-    required String roomId,
-    required String userId,
-  }) {
-    return storageProvider.chatRoom.shareSubscriptionPackageMessage(
-      package: package,
-      isPurchased: isPurchased,
-      roomId: roomId,
-      userId: userId,
-    );
+    return storageProvider.chatRoom.saveMessage(request);
   }
 }

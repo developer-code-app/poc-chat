@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat/models/chat_room.dart';
+import 'package:poc_chat/models/chat_management.dart';
 import 'package:poc_chat/models/message.dart';
 import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/models/user.dart';
@@ -15,6 +18,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
   ChatPageBloc({
     required this.repository,
     required this.user,
+    required this.chatRoomId,
   }) : super(InitialState()) {
     on<StartedEvent>(_mapStartedToState);
     on<DataLoadedEvent>(_mapDataLoadedToState);
@@ -22,20 +26,29 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     on<BasicMessageSentEvent>(_mapBasicMessageSentToState);
     on<ShareSubscriptionPackageEvent>(_mapShareSubscriptionPackageToState);
     on<MessageUpdatedEvent>(_onMessageUpdatedEvent);
+
+    ChatManagement.instance.listener((message) async {
+      if (message.owner.id != user.id) {
+        await repository
+            .saveMessage(message: message, chatRoomId: chatRoomId)
+            .then(MessageUpdatedEvent.new)
+            .then(add);
+      }
+    });
   }
 
   final RoomRepository repository;
   final User user;
-  static int roomId = 1;
+  final String chatRoomId;
 
   Future<void> _mapStartedToState(
     StartedEvent event,
     Emitter emit,
   ) async {
     try {
-      final room = await repository.fetchRoom(roomId: roomId);
+      final chatRoom = await repository.findChatRoom(chatRoomId: chatRoomId);
 
-      add(DataLoadedEvent(room: room));
+      add(DataLoadedEvent(chatRoom: chatRoom));
     } on Exception catch (error) {
       add(ErrorOccurredEvent(error));
     }
@@ -45,7 +58,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     DataLoadedEvent event,
     Emitter emit,
   ) async {
-    emit(LoadSuccessState(room: event.room, currentUser: user));
+    emit(LoadSuccessState(room: event.chatRoom, currentUser: user));
   }
 
   Future<void> _mapErrorOccurredToState(
@@ -59,29 +72,36 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     BasicMessageSentEvent event,
     Emitter emit,
   ) async {
-    repository
-        .sendBasicMessage(
-          text: event.text,
-          roomId: roomId.toString(),
-          userId: user.id,
-        )
-        .then(MessageUpdatedEvent.new)
-        .then(add);
+    final message = await repository.saveMessage(
+      message: BasicMessage(
+        id: 'MESSAGE_ID',
+        owner: user,
+        text: event.text,
+      ),
+      chatRoomId: chatRoomId,
+    );
+
+    add(MessageUpdatedEvent(message));
+    ChatManagement.instance.sendMessage(message);
   }
 
   Future<void> _mapShareSubscriptionPackageToState(
     ShareSubscriptionPackageEvent event,
     Emitter emit,
   ) async {
-    repository
-        .shareSubscriptionPackageMessage(
-          package: event.package,
-          isPurchased: event.isPurchased,
-          roomId: roomId.toString(),
-          userId: user.id,
-        )
-        .then(MessageUpdatedEvent.new)
-        .then(add);
+    final message = await repository.saveMessage(
+      message: SubscriptionPackageMessage(
+        id: 'MESSAGE_ID',
+        owner: user,
+        imageUrl: event.package.thumbnailUrl,
+        name: event.package.name,
+        isPurchased: event.isPurchased,
+      ),
+      chatRoomId: chatRoomId,
+    );
+
+    add(MessageUpdatedEvent(message));
+    ChatManagement.instance.sendMessage(message);
   }
 
   Future<void> _onMessageUpdatedEvent(
@@ -93,7 +113,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     if (state is LoadSuccessState) {
       add(
         DataLoadedEvent(
-          room: state.room.copyWith(
+          chatRoom: state.room.copyWith(
             messages: state.room.messages..add(event.message),
           ),
         ),

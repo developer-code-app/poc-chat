@@ -7,7 +7,6 @@ part 'isar_user_entity.g.dart';
 class IsarUserEntity {
   Id id = Isar.autoIncrement;
 
-  late String userId;
   late String imageUrl;
   late String name;
 

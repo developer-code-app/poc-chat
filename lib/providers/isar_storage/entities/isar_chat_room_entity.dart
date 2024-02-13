@@ -8,8 +8,6 @@ part 'isar_chat_room_entity.g.dart';
 class IsarChatRoomEntity {
   Id id = Isar.autoIncrement;
 
-  late String roomId;
-
   final messages = IsarLinks<IsarMessageEntity>();
   final members = IsarLinks<IsarUserEntity>();
 }

@@ -6,8 +6,8 @@ class UserRepository {
 
   final IsarStorageProvider storageProvider;
 
-  Future<List<User>> fetchUsers() async {
-    return await storageProvider.user.fetchUsers();
+  Future<List<User>> findAllUsers() async {
+    return await storageProvider.user.findAllUsers();
   }
 
   Future<void> addUsersMockData() async {

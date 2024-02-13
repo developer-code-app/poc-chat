@@ -10,8 +10,6 @@ part 'isar_message_entity.g.dart';
 class IsarMessageEntity {
   Id id = Isar.autoIncrement;
 
-  late String messageId;
-
   @enumerated
   late MessageType type;
 

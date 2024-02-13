@@ -26,11 +26,6 @@ const IsarUserEntitySchema = CollectionSchema(
       id: 1,
       name: r'name',
       type: IsarType.string,
-    ),
-    r'userId': PropertySchema(
-      id: 2,
-      name: r'userId',
-      type: IsarType.string,
     )
   },
   estimateSize: _isarUserEntityEstimateSize,
@@ -63,7 +58,6 @@ int _isarUserEntityEstimateSize(
   var bytesCount = offsets.last;
   bytesCount += 3 + object.imageUrl.length * 3;
   bytesCount += 3 + object.name.length * 3;
-  bytesCount += 3 + object.userId.length * 3;
   return bytesCount;
 }
 
@@ -75,7 +69,6 @@ void _isarUserEntitySerialize(
 ) {
   writer.writeString(offsets[0], object.imageUrl);
   writer.writeString(offsets[1], object.name);
-  writer.writeString(offsets[2], object.userId);
 }
 
 IsarUserEntity _isarUserEntityDeserialize(
@@ -88,7 +81,6 @@ IsarUserEntity _isarUserEntityDeserialize(
   object.id = id;
   object.imageUrl = reader.readString(offsets[0]);
   object.name = reader.readString(offsets[1]);
-  object.userId = reader.readString(offsets[2]);
   return object;
 }
 
@@ -102,8 +94,6 @@ P _isarUserEntityDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
-    case 2:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -534,142 +524,6 @@ extension IsarUserEntityQueryFilter
       ));
     });
   }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'userId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'userId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'userId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterFilterCondition>
-      userIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'userId',
-        value: '',
-      ));
-    });
-  }
 }
 
 extension IsarUserEntityQueryObject
@@ -765,19 +619,6 @@ extension IsarUserEntityQuerySortBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterSortBy> sortByUserId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterSortBy>
-      sortByUserIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.desc);
-    });
-  }
 }
 
 extension IsarUserEntityQuerySortThenBy
@@ -818,19 +659,6 @@ extension IsarUserEntityQuerySortThenBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterSortBy> thenByUserId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QAfterSortBy>
-      thenByUserIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.desc);
-    });
-  }
 }
 
 extension IsarUserEntityQueryWhereDistinct
@@ -846,13 +674,6 @@ extension IsarUserEntityQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, IsarUserEntity, QDistinct> distinctByUserId(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'userId', caseSensitive: caseSensitive);
     });
   }
 }
@@ -874,12 +695,6 @@ extension IsarUserEntityQueryProperty
   QueryBuilder<IsarUserEntity, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
-    });
-  }
-
-  QueryBuilder<IsarUserEntity, String, QQueryOperations> userIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'userId');
     });
   }
 }
