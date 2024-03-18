@@ -1,6 +1,8 @@
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat/app/app_theme.dart';
+import 'package:poc_chat/app/cubits/app_theme_cubit.dart';
 import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart' as chat_bloc;
 import 'package:poc_chat/page/chat/chat_page.dart' as chat_page;
@@ -18,63 +20,78 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = context.read<AppThemeCubit>().state;
+    final background = Background.of(theme);
 
     return BlocBuilder<LoginPageBloc, LoginPageState>(
         builder: (context, state) {
       final bloc = context.read<LoginPageBloc>();
 
       if (state is LoadSuccessState) {
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: colorScheme.inversePrimary,
-            title: const Text('POC Chat'),
-            actions: [
-              TextButton(
-                onPressed: () => bloc.add(SetupMockDataEvent()),
-                child: const Text('Set Mock'),
+        return Container(
+          decoration: background,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              shadowColor: Colors.transparent,
+              backgroundColor: theme.neumorphic.baseColor,
+              title: Text(
+                'POC Chat',
+                style: theme.typography.headline1,
               ),
-              TextButton(
-                onPressed: () => bloc.add(ClearDatabaseEvent()),
-                child: const Text('Clear db'),
-              ),
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Accounts',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              actions: [
+                TextButton(
+                  onPressed: () => bloc.add(SetupMockDataEvent()),
+                  child: const Text('Set Mock'),
                 ),
-                const SizedBox(height: 20),
-                ...state.users
-                    .map<Widget>(
-                      (user) => Row(
-                        children: [
-                          Text(
-                            user.name,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          TextButton(
-                            onPressed: () => navigationToChatPage(user: user),
-                            child: const Text('Login'),
-                          )
-                        ],
-                      ),
-                    )
-                    .intersperse(const Divider())
-                    .toList()
+                TextButton(
+                  onPressed: () => bloc.add(ClearDatabaseEvent()),
+                  child: const Text('Clear db'),
+                ),
               ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Accounts',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  ...state.users
+                      .map<Widget>(
+                        (user) => Row(
+                          children: [
+                            Text(
+                              user.name,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            TextButton(
+                              onPressed: () => navigationToChatPage(user: user),
+                              child: const Text('Login'),
+                            )
+                          ],
+                        ),
+                      )
+                      .intersperse(const Divider())
+                      .toList()
+                ],
+              ),
             ),
           ),
         );
       } else if (state is LoadFailureState) {
-        return Scaffold(body: Center(child: Text(state.error.toString())));
+        return Container(
+          decoration: background,
+          child: Scaffold(body: Center(child: Text(state.error.toString()))),
+        );
       } else {
-        return Scaffold(body: Container());
+        return Container(
+          decoration: background,
+          child: Scaffold(body: Container()),
+        );
       }
     });
   }

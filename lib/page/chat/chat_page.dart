@@ -1,12 +1,16 @@
 import 'package:dfunc/dfunc.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:intl/intl.dart';
+import 'package:poc_chat/app/app_theme.dart';
+import 'package:poc_chat/app/cubits/app_theme_cubit.dart';
+import 'package:poc_chat/gen/colors.gen.dart';
 import 'package:poc_chat/models/message.dart';
 import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/models/time.dart';
 import 'package:poc_chat/page/action_sheet.dart' as action_sheet;
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart';
+import 'package:poc_chat/page/primary_button.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -41,132 +45,147 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = context.read<AppThemeCubit>().state;
+    final background = Background.of(theme);
 
     return BlocBuilder<ChatPageBloc, ChatPageState>(builder: (context, state) {
       final bloc = context.read<ChatPageBloc>();
 
       if (state is LoadSuccessState) {
-        return Scaffold(
-          resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            backgroundColor: colorScheme.inversePrimary,
-            title: Text('Hello, ${state.currentUser.name}'),
-            actions: [
-              if (state.currentUser.id == '1')
-                TextButton(
-                  onPressed: () {
-                    action_sheet.ActionSheet(
-                      title: 'Share',
-                      actions: [
-                        action_sheet.Action(
-                          'Subscription',
-                          () => bloc.add(
-                            ShareSubscriptionPackageEvent(
-                              package: package,
-                              isPurchased: false,
+        return Container(
+          decoration: background,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+              shadowColor: Colors.transparent,
+              backgroundColor: theme.neumorphic.baseColor,
+              title: Text(
+                'Hello, ${state.currentUser.name}',
+                style: theme.typography.headline3,
+              ),
+              actions: [
+                if (state.currentUser.id == '1')
+                  TextButton(
+                    onPressed: () {
+                      action_sheet.ActionSheet(
+                        title: 'Share',
+                        actions: [
+                          action_sheet.Action(
+                            'Subscription',
+                            () => bloc.add(
+                              ShareSubscriptionPackageEvent(
+                                package: package,
+                                isPurchased: false,
+                              ),
                             ),
                           ),
-                        ),
-                        action_sheet.Action(
-                          'Appointment',
+                          action_sheet.Action(
+                            'Appointment',
+                            () {},
+                          )
+                        ],
+                        cancel: action_sheet.Action(
+                          'Cancel',
                           () {},
-                        )
-                      ],
-                      cancel: action_sheet.Action(
-                        'Cancel',
-                        () {},
-                      ),
-                    ).show(context);
-                  },
-                  child: Icon(
-                    Icons.share,
-                    color: Colors.grey.shade700,
+                        ),
+                      ).show(context);
+                    },
+                    child: Icon(
+                      Icons.share,
+                      color: Colors.grey.shade700,
+                    ),
                   ),
-                ),
-            ],
-          ),
-          backgroundColor: Colors.grey.shade100,
-          body: Column(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: ListView(
-                      controller: scrollController,
-                      shrinkWrap: true,
-                      reverse: true,
-                      children: state.room.messages.reversed.map((message) {
-                        return _buildMessage(context, state, message: message);
-                      }).toList(),
+              ],
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: ListView(
+                        controller: scrollController,
+                        shrinkWrap: true,
+                        reverse: true,
+                        children: state.room.messages.reversed.map((message) {
+                          return _buildMessage(context, state,
+                              message: message);
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Container(
-                color: colorScheme.inversePrimary,
-                height: 100,
-                width: double.maxFinite,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            color: Colors.grey.shade700,
+                Container(
+                  color: theme.neumorphic.baseColor,
+                  height: 100,
+                  width: double.maxFinite,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.camera_alt_outlined,
+                              color: Colors.grey.shade700,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.photo_outlined,
-                            color: Colors.grey.shade700,
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.photo_outlined,
+                              color: Colors.grey.shade700,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: textEditingController,
-                          decoration: const InputDecoration(hintText: 'Aa'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: GestureDetector(
-                          onTap: _onMessageSubmitted,
-                          child: Icon(
-                            Icons.send,
-                            color: Colors.grey.shade700,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: textEditingController,
+                            decoration: const InputDecoration(hintText: 'Aa'),
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: GestureDetector(
+                            onTap: _onMessageSubmitted,
+                            child: Icon(
+                              Icons.send,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       } else if (state is LoadFailureState) {
-        return Scaffold(body: Center(child: Text(state.error.toString())));
+        return Container(
+          decoration: background,
+          child: Scaffold(body: Center(child: Text(state.error.toString()))),
+        );
       } else {
-        return Scaffold(body: Container());
+        return Container(
+          decoration: background,
+          child: Scaffold(body: Container()),
+        );
       }
     });
   }
@@ -193,11 +212,13 @@ class _ChatPageState extends State<ChatPage> {
               _buildSubscriptionMessage(
                 context,
                 message: message,
+                isOwner: isOwner,
               ),
             if (message is AppointmentMessage)
               _buildAppointmentMessage(
                 context,
                 message: message,
+                isOwner: isOwner,
               ),
           ],
         ),
@@ -212,6 +233,7 @@ class _ChatPageState extends State<ChatPage> {
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     final isOwner = message.owner.id == state.currentUser.id;
+    final theme = context.read<AppThemeCubit>().state;
 
     return Container(
       decoration: BoxDecoration(
@@ -222,7 +244,7 @@ class _ChatPageState extends State<ChatPage> {
         padding: const EdgeInsets.all(8),
         child: Text(
           message.text,
-          style: const TextStyle(fontSize: 16),
+          style: theme.typography.body1,
         ),
       ),
     );
@@ -231,126 +253,144 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildSubscriptionMessage(
     BuildContext context, {
     required SubscriptionPackageMessage message,
+    required bool isOwner,
   }) {
     final bloc = context.read<ChatPageBloc>();
+    final theme = context.read<AppThemeCubit>().state;
 
-    return Container(
-      width: 160,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade400,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              ),
+    return Row(
+      children: [
+        if (isOwner) const Expanded(child: SizedBox()),
+        Expanded(
+          flex: 2,
+          child: Neumorphic(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Image.network(message.imageUrl),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    message.name,
+                    style: theme.typography.body2,
+                  ),
+                ),
+                if (message.isPurchased)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 16, 16),
+                    child: Text(
+                      'ชำระเงินแล้ว',
+                      style: theme.typography.buttonLabel.copyWith(
+                        color: ColorName.greenBlue,
+                      ),
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 16, 16),
+                    child: PrimaryButton(
+                      title: 'ชำระเงิน',
+                      onPressed: () => bloc.add(
+                        ShareSubscriptionPackageEvent(
+                          package: package,
+                          isPurchased: true,
+                        ),
+                      ),
+                    ),
+                  )
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(message.name),
-          ),
-          if (message.isPurchased)
-            TextButton(onPressed: () {}, child: const Text('ชำระเงินแล้ว'))
-          else
-            TextButton(
-              onPressed: () => bloc.add(
-                ShareSubscriptionPackageEvent(
-                  package: package,
-                  isPurchased: true,
-                ),
-              ),
-              child: const Text('ชำระเงิน'),
-            )
-        ],
-      ),
+        ),
+        if (!isOwner) const Expanded(child: SizedBox()),
+      ],
     );
   }
 
   Widget _buildAppointmentMessage(
     BuildContext context, {
     required AppointmentMessage message,
+    required bool isOwner,
   }) {
     final selectedDate = message.selectedDate;
+    final theme = context.read<AppThemeCubit>().state;
 
-    return Container(
-      width: 300,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'สร้างนัดหมาย',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(message.packageName),
-          ),
-          const Divider(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text('วันนัดหมาย'),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              DateFormat('dd MMMM yyyy')
-                  .format(message.availableDates.first.date),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          if (selectedDate != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                selectedDate.time.description() ?? '',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+    return Row(
+      children: [
+        if (isOwner) const Expanded(child: SizedBox()),
+        Expanded(
+          flex: 10,
+          child: Neumorphic(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'สร้างนัดหมาย',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-            )
-          else
-            ...message.availableDates
-                .map<Widget>((availableDate) {
-                  return Padding(
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    message.packageName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Divider(),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text('วันนัดหมาย'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    DateFormat('dd MMMM yyyy')
+                        .format(message.availableDates.first.date),
+                    style: theme.typography.body1.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                if (selectedDate != null)
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: TextButton(
-                        onPressed: () {},
-                        child: Text(availableDate.time.description() ?? ''),
+                    child: Text(
+                      selectedDate.time.description() ?? '',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                })
-                .intersperse(const SizedBox(height: 8))
-                .toList(),
-          const SizedBox(height: 16),
-        ],
-      ),
+                  )
+                else
+                  ...message.availableDates
+                      .map<Widget>((availableDate) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: NeumorphicButton(
+                            onPressed: () {},
+                            child: Text(
+                              availableDate.time.description() ?? '',
+                              style: theme.typography.buttonLabel,
+                            ),
+                          ),
+                        );
+                      })
+                      .intersperse(const SizedBox(height: 10))
+                      .toList(),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+        if (!isOwner) const Expanded(child: SizedBox()),
+      ],
     );
   }
 
@@ -371,12 +411,15 @@ class _ChatPageState extends State<ChatPage> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 children: [
-                  Container(
+                  SizedBox(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      shape: BoxShape.circle,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        state.currentUser.imageUrl,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),

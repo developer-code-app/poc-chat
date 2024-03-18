@@ -34,7 +34,7 @@ class IsarUserService {
     final users = ['SC Asset', 'Pattarapon']
         .mapIndexed((index, name) => IsarUserEntity()
           ..name = name
-          ..imageUrl = '')
+          ..imageUrl = 'https://storage.googleapis.com/sc-asset/brand-site/media/bucket/images/SC_SCAsset_Facebook.jpg')
         .toList();
     final room = IsarChatRoomEntity();
     final messages = [
@@ -55,7 +55,8 @@ class IsarUserService {
         ..owner.value = users.first
         ..type = MessageType.subscription
         ..package = (SubscriptionPackage()
-          ..imageUrl = ''
+          ..imageUrl =
+              'https://storage.googleapis.com/sca-prod-brj-article-upload/article/article-1609931117654-412cfd22-12b5-4f13-8837-ecb11fe9c6e2'
           ..name = packageName
           ..isPurchased = false),
       IsarMessageEntity()
@@ -66,7 +67,8 @@ class IsarUserService {
         ..owner.value = users.last
         ..type = MessageType.subscription
         ..package = (SubscriptionPackage()
-          ..imageUrl = ''
+          ..imageUrl =
+              'https://storage.googleapis.com/sca-prod-brj-article-upload/article/article-1609931117654-412cfd22-12b5-4f13-8837-ecb11fe9c6e2'
           ..name = packageName
           ..isPurchased = true),
       IsarMessageEntity()
