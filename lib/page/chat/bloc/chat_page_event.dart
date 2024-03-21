@@ -37,3 +37,5 @@ class ShareSubscriptionPackageEvent extends _Event {
   final SubscriptionPackage package;
   final bool isPurchased;
 }
+
+class SearchEvent extends _Event {}

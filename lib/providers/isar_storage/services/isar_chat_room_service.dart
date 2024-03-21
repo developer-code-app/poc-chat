@@ -14,6 +14,17 @@ class IsarChatRoomService {
 
   final Future<Isar> isar;
 
+  Future<List<Message>> findMessages({required String message}) async {
+    return isar.then((isar) async {
+      final entities = await isar.isarMessageEntitys
+          .filter()
+          .textContains(message)
+          .findAll();
+
+      return entities.map(Message.fromEntity).toList();
+    });
+  }
+
   Future<ChatRoom> findChatRoom({required String chatRoomId}) async {
     return isar.then((isar) async {
       final entity = await isar.isarChatRoomEntitys.get(int.parse(chatRoomId));

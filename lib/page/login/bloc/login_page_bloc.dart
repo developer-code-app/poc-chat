@@ -27,7 +27,7 @@ class LoginPageBloc extends Bloc<LoginPageEvent, LoginPageState> {
       final users = await repository.findAllUsers();
 
       add(DataLoadedEvent(
-        users: users.where((element) => element.id == '2').toList(),
+        users: users.where((element) => element.id == '1').toList(),
       ));
     } on Exception catch (error) {
       add(ErrorOccurredEvent(error));
