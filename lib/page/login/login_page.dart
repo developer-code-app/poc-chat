@@ -1,6 +1,7 @@
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat/models/chat_management.dart';
 import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart' as chat_bloc;
 import 'package:poc_chat/page/chat/chat_page.dart' as chat_page;
@@ -80,6 +81,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void navigationToChatPage({required User user}) {
+    ChatWebSocket.instance.connect();
+
     Navigator.push(
       context,
       MaterialPageRoute(

@@ -2,6 +2,7 @@ import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:poc_chat/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat/models/message.dart';
 import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/models/time.dart';
@@ -53,6 +54,20 @@ class _ChatPageState extends State<ChatPage> {
             backgroundColor: colorScheme.inversePrimary,
             title: Text('Hello, ${state.currentUser.name}'),
             actions: [
+              TextButton(
+                onPressed: () {
+                  AlertDialogConvenienceShowing.showAlertDialog(
+                    context: context,
+                    title: 'Search Message',
+                    actions: [AlertAction('Search')],
+                  );
+                  bloc.add(SearchEvent());
+                },
+                child: Icon(
+                  Icons.search,
+                  color: Colors.grey.shade700,
+                ),
+              ),
               if (state.currentUser.id == '1')
                 TextButton(
                   onPressed: () {

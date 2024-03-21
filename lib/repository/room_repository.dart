@@ -8,6 +8,10 @@ class RoomRepository {
 
   final IsarStorageProvider storageProvider;
 
+  Future<List<Message>> searchMessages({required String message}) async {
+    return storageProvider.chatRoom.findMessages(message: message);
+  }
+
   Future<ChatRoom> findChatRoom({required String chatRoomId}) async {
     return storageProvider.chatRoom.findChatRoom(chatRoomId: chatRoomId);
   }

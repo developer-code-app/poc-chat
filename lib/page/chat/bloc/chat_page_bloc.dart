@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat/broadcaster/broadcaster.dart';
 import 'package:poc_chat/models/chat_room.dart';
 import 'package:poc_chat/models/chat_management.dart';
 import 'package:poc_chat/models/message.dart';
@@ -26,13 +27,17 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     on<BasicMessageSentEvent>(_mapBasicMessageSentToState);
     on<ShareSubscriptionPackageEvent>(_mapShareSubscriptionPackageToState);
     on<MessageUpdatedEvent>(_onMessageUpdatedEvent);
+    on<SearchEvent>(_onSearchEvent);
 
-    ChatManagement.instance.listener((message) async {
-      if (message.owner.id != user.id) {
-        await repository
-            .saveMessage(message: message, chatRoomId: chatRoomId)
-            .then(MessageUpdatedEvent.new)
-            .then(add);
+    _broadcasterSubscription =
+        Broadcaster.instance.stream.listen((message) async {
+      if (message is ChatMessage) {
+        if (message.message.owner.id != user.id) {
+          await repository
+              .saveMessage(message: message.message, chatRoomId: chatRoomId)
+              .then(MessageUpdatedEvent.new)
+              .then(add);
+        }
       }
     });
   }
@@ -40,6 +45,16 @@ class ChatPageBloc extends Bloc<_Event, _State> {
   final RoomRepository repository;
   final User user;
   final String chatRoomId;
+
+  StreamSubscription<BroadcastMessage>? _broadcasterSubscription;
+
+  @override
+  Future<void> close() {
+    _broadcasterSubscription?.cancel();
+    ChatWebSocket.instance.disconnect();
+
+    return super.close();
+  }
 
   Future<void> _mapStartedToState(
     StartedEvent event,
@@ -82,7 +97,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     );
 
     add(MessageUpdatedEvent(message));
-    ChatManagement.instance.sendMessage(message);
+    ChatWebSocket.instance.sendMessage(message);
   }
 
   Future<void> _mapShareSubscriptionPackageToState(
@@ -101,7 +116,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     );
 
     add(MessageUpdatedEvent(message));
-    ChatManagement.instance.sendMessage(message);
+    ChatWebSocket.instance.sendMessage(message);
   }
 
   Future<void> _onMessageUpdatedEvent(
@@ -118,6 +133,19 @@ class ChatPageBloc extends Bloc<_Event, _State> {
           ),
         ),
       );
+    }
+  }
+
+  Future<void> _onSearchEvent(
+    SearchEvent event,
+    Emitter emit,
+  ) async {
+    try {
+      final messages = await repository.searchMessages(message: 'รวิทัต');
+      final result =
+          messages.whereType<BasicMessage>().map((e) => e.text).join(', ');
+    } catch (error) {
+      print('Error: $error');
     }
   }
 }
