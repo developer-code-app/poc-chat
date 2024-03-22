@@ -17,6 +17,7 @@ class IsarMessageEntity {
   List<String>? photos;
   SubscriptionPackage? package;
   Appointment? appointment;
+  DateTime? deletedAt;
 
   @Backlink(to: 'messages')
   final room = IsarLink<IsarChatRoomEntity>();

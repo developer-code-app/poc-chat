@@ -23,24 +23,29 @@ const IsarMessageEntitySchema = CollectionSchema(
       type: IsarType.object,
       target: r'Appointment',
     ),
-    r'package': PropertySchema(
+    r'deletedAt': PropertySchema(
       id: 1,
+      name: r'deletedAt',
+      type: IsarType.dateTime,
+    ),
+    r'package': PropertySchema(
+      id: 2,
       name: r'package',
       type: IsarType.object,
       target: r'SubscriptionPackage',
     ),
     r'photos': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'photos',
       type: IsarType.stringList,
     ),
     r'text': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'text',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'type',
       type: IsarType.byte,
       enumMap: _IsarMessageEntitytypeEnumValueMap,
@@ -133,15 +138,16 @@ void _isarMessageEntitySerialize(
     AppointmentSchema.serialize,
     object.appointment,
   );
+  writer.writeDateTime(offsets[1], object.deletedAt);
   writer.writeObject<SubscriptionPackage>(
-    offsets[1],
+    offsets[2],
     allOffsets,
     SubscriptionPackageSchema.serialize,
     object.package,
   );
-  writer.writeStringList(offsets[2], object.photos);
-  writer.writeString(offsets[3], object.text);
-  writer.writeByte(offsets[4], object.type.index);
+  writer.writeStringList(offsets[3], object.photos);
+  writer.writeString(offsets[4], object.text);
+  writer.writeByte(offsets[5], object.type.index);
 }
 
 IsarMessageEntity _isarMessageEntityDeserialize(
@@ -156,16 +162,17 @@ IsarMessageEntity _isarMessageEntityDeserialize(
     AppointmentSchema.deserialize,
     allOffsets,
   );
+  object.deletedAt = reader.readDateTimeOrNull(offsets[1]);
   object.id = id;
   object.package = reader.readObjectOrNull<SubscriptionPackage>(
-    offsets[1],
+    offsets[2],
     SubscriptionPackageSchema.deserialize,
     allOffsets,
   );
-  object.photos = reader.readStringList(offsets[2]);
-  object.text = reader.readStringOrNull(offsets[3]);
+  object.photos = reader.readStringList(offsets[3]);
+  object.text = reader.readStringOrNull(offsets[4]);
   object.type =
-      _IsarMessageEntitytypeValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+      _IsarMessageEntitytypeValueEnumMap[reader.readByteOrNull(offsets[5])] ??
           MessageType.basic;
   return object;
 }
@@ -184,16 +191,18 @@ P _isarMessageEntityDeserializeProp<P>(
         allOffsets,
       )) as P;
     case 1:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 2:
       return (reader.readObjectOrNull<SubscriptionPackage>(
         offset,
         SubscriptionPackageSchema.deserialize,
         allOffsets,
       )) as P;
-    case 2:
-      return (reader.readStringList(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
       return (_IsarMessageEntitytypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           MessageType.basic) as P;
@@ -330,6 +339,80 @@ extension IsarMessageEntityQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'appointment',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      deletedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'deletedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      deletedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'deletedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      deletedAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'deletedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      deletedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'deletedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      deletedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'deletedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterFilterCondition>
+      deletedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'deletedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -913,6 +996,20 @@ extension IsarMessageEntityQueryLinks
 extension IsarMessageEntityQuerySortBy
     on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QSortBy> {
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByDeletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      sortByDeletedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
       sortByText() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'text', Sort.asc);
@@ -943,6 +1040,20 @@ extension IsarMessageEntityQuerySortBy
 
 extension IsarMessageEntityQuerySortThenBy
     on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QSortThenBy> {
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByDeletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy>
+      thenByDeletedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -988,6 +1099,13 @@ extension IsarMessageEntityQuerySortThenBy
 extension IsarMessageEntityQueryWhereDistinct
     on QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct> {
   QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct>
+      distinctByDeletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'deletedAt');
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, IsarMessageEntity, QDistinct>
       distinctByPhotos() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'photos');
@@ -1021,6 +1139,13 @@ extension IsarMessageEntityQueryProperty
       appointmentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'appointment');
+    });
+  }
+
+  QueryBuilder<IsarMessageEntity, DateTime?, QQueryOperations>
+      deletedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'deletedAt');
     });
   }
 

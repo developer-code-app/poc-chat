@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:poc_chat/broadcaster/broadcaster.dart';
 import 'package:poc_chat/models/message.dart';
-import 'package:poc_chat/models/user.dart';
+import 'package:poc_chat/models/message_event.dart';
 
 class ChatWebSocket {
   ChatWebSocket._();
@@ -17,7 +17,7 @@ class ChatWebSocket {
     return _instance!;
   }
 
-  static String webSocketUrl = 'ws://10.0.0.24:8080';
+  static String webSocketUrl = 'ws://10.0.0.9:8080';
 
   WebSocket? webSocket;
 
@@ -28,38 +28,20 @@ class ChatWebSocket {
     webSocket?.listen(
       (jsonString) {
         final json = jsonDecode(jsonString) as Map<String, dynamic>;
+        final payload = WebSocketPayload.fromJson(json);
 
-        Message message;
-
-        if (json['type'] == 'BASIC') {
-          message = BasicMessage(
-            id: json['id'],
-            owner: User(
-              id: json['owner']['id'],
-              name: json['owner']['name'],
-              imageUrl: json['owner']['image_url'],
+        if (payload is MessagePayload) {
+          Broadcaster.instance.add(ChatMessage(message: payload.message));
+        } else if (payload is DeleteEventPayload) {
+          Broadcaster.instance.add(
+            DeleteMessageEvent(
+              messageId: payload.messageId,
+              ownerId: payload.ownerId,
             ),
-            text: json['text'],
           );
-        } else if (json['type'] == 'SUBSCRIPTION') {
-          message = SubscriptionPackageMessage(
-            id: json['id'],
-            owner: User(
-              id: json['owner']['id'],
-              name: json['owner']['name'],
-              imageUrl: json['owner']['image_url'],
-            ),
-            imageUrl: json['image_url'],
-            name: json['name'],
-            isPurchased: json['is_purchased'],
-          );
-        } else {
-          throw Exception('Unsupported message type');
         }
-
-        Broadcaster.instance.add(ChatMessage(message: message));
       },
-      onError: () => connect(),
+      onError: (_) => connect(),
       onDone: () => disconnect().then((_) => connect()),
     );
   }
@@ -83,14 +65,17 @@ class ChatWebSocket {
     await connect();
 
     Map<String, dynamic> json = {
-      'id': message.id,
-      'owner': {
-        'id': message.owner.id,
-        'image_url': message.owner.imageUrl,
-        'name': message.owner.name,
-      },
-      'text': message.text,
-      'type': 'BASIC'
+      'type': 'MESSAGE',
+      'message': {
+        'id': message.id,
+        'owner': {
+          'id': message.owner.id,
+          'image_url': message.owner.imageUrl,
+          'name': message.owner.name,
+        },
+        'text': message.text,
+        'type': 'BASIC',
+      }
     };
 
     webSocket?.add(const JsonEncoder().convert(json));
@@ -102,16 +87,34 @@ class ChatWebSocket {
     await connect();
 
     Map<String, dynamic> json = {
-      'id': message.id,
-      'owner': {
-        'id': message.owner.id,
-        'image_url': message.owner.imageUrl,
-        'name': message.owner.name,
-      },
-      'image_url': message.imageUrl,
-      'name': message.name,
-      'is_purchased': message.isPurchased,
-      'type': 'SUBSCRIPTION'
+      'type': 'MESSAGE',
+      'message': {
+        'id': message.id,
+        'owner': {
+          'id': message.owner.id,
+          'image_url': message.owner.imageUrl,
+          'name': message.owner.name,
+        },
+        'image_url': message.imageUrl,
+        'name': message.name,
+        'is_purchased': message.isPurchased,
+        'type': 'SUBSCRIPTION',
+      }
+    };
+
+    webSocket?.add(const JsonEncoder().convert(json));
+  }
+
+  Future<void> deleteMessage(Message message) async {
+    await connect();
+
+    Map<String, dynamic> json = {
+      'type': 'EVENT',
+      'event': {
+        'message_id': message.id,
+        'owner_id': message.owner.id,
+        'type': 'DELETE',
+      }
     };
 
     webSocket?.add(const JsonEncoder().convert(json));

@@ -27,4 +27,8 @@ class RoomRepository {
 
     return storageProvider.chatRoom.saveMessage(request);
   }
+
+  Future<Message> deleteMessage({required String messageId}) {
+    return storageProvider.chatRoom.deleteMessage(messageId);
+  }
 }
