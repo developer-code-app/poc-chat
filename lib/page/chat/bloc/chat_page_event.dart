@@ -44,8 +44,6 @@ class ShareSubscriptionPackageEvent extends _Event {
   final bool isPurchased;
 }
 
-class SearchEvent extends _Event {}
-
 class MessageOptionsRequestedEvent extends _Event {
   MessageOptionsRequestedEvent(
     this.context, {
