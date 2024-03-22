@@ -6,8 +6,13 @@ import 'package:poc_chat/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat/models/message.dart';
 import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/models/time.dart';
+import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/page/action_sheet.dart' as action_sheet;
 import 'package:poc_chat/page/chat/bloc/chat_page_bloc.dart';
+import 'package:poc_chat/page/search/bloc/search_page_bloc.dart' as search_bloc;
+import 'package:poc_chat/page/search/search_page.dart' as search_page;
+import 'package:poc_chat/providers/isar_storage/isar_storage_provider.dart';
+import 'package:poc_chat/repository/room_repository.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -56,12 +61,22 @@ class _ChatPageState extends State<ChatPage> {
             actions: [
               TextButton(
                 onPressed: () {
+                  final controller = TextEditingController();
+
                   AlertDialogConvenienceShowing.showAlertDialog(
                     context: context,
                     title: 'Search Message',
-                    actions: [AlertAction('Search')],
+                    inputField: TextField(controller: controller),
+                    actions: [
+                      AlertAction(
+                        'Search',
+                        onPressed: () => navigationToSearchPage(
+                          keyword: controller.text,
+                          currentUser: state.currentUser,
+                        ),
+                      )
+                    ],
                   );
-                  bloc.add(SearchEvent());
                 },
                 child: Icon(
                   Icons.search,
@@ -432,5 +447,39 @@ class _ChatPageState extends State<ChatPage> {
     } else {
       return Container();
     }
+  }
+
+  void navigationToSearchPage({
+    required String keyword,
+    required User currentUser,
+  }) {
+    // Future.delayed(const Duration(milliseconds: 500), () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<RoomRepository>(
+              create: (context) => RoomRepository(
+                storageProvider: IsarStorageProvider.basic(),
+              ),
+            ),
+          ],
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<search_bloc.SearchPageBloc>(
+                create: (context) => search_bloc.SearchPageBloc(
+                  repository: context.read<RoomRepository>(),
+                  user: currentUser,
+                  keyword: keyword,
+                )..add(search_bloc.StartedEvent()),
+              ),
+            ],
+            child: const search_page.SearchPage(),
+          ),
+        ),
+      ),
+    );
+    // });
   }
 }

@@ -28,7 +28,6 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     on<ErrorOccurredEvent>(_mapErrorOccurredToState);
     on<BasicMessageSentEvent>(_mapBasicMessageSentToState);
     on<ShareSubscriptionPackageEvent>(_mapShareSubscriptionPackageToState);
-    on<SearchEvent>(_onSearchEvent);
     on<MessageAddedEvent>(_onMessageAddedEvent);
     on<MessageDeletedEvent>(_onMessageDeletedEvent);
     on<MessageOptionsRequestedEvent>(_onMessageOptionsRequestedEvent);
@@ -145,19 +144,6 @@ class ChatPageBloc extends Bloc<_Event, _State> {
           ),
         ),
       );
-    }
-  }
-
-  Future<void> _onSearchEvent(
-    SearchEvent event,
-    Emitter emit,
-  ) async {
-    try {
-      final messages = await repository.searchMessages(message: 'รวิทัต');
-      final result =
-          messages.whereType<BasicMessage>().map((e) => e.text).join(', ');
-    } catch (error) {
-      print('Error: $error');
     }
   }
 
