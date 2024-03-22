@@ -70,4 +70,24 @@ class IsarChatRoomService {
       return Message.fromEntity(message);
     }).onError<Error>((error, _) => throw Exception(error));
   }
+
+  Future<Message> deleteMessage(String messageId) async {
+    return isar.then((isar) async {
+      final messageEntity =
+          await isar.isarMessageEntitys.get(int.parse(messageId));
+      final message =
+          messageEntity.getOrThrow(errorMessage: 'Message not found.');
+
+      message.deletedAt = DateTime.now();
+
+      await isar.writeTxn(() async {
+        await isar.isarMessageEntitys.put(message);
+
+        message.room.save();
+        message.owner.save();
+      });
+
+      return Message.fromEntity(message);
+    }).onError<Error>((error, _) => throw Exception(error));
+  }
 }

@@ -202,18 +202,22 @@ class _ChatPageState extends State<ChatPage> {
               isOwner ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             _buildUser(context, state, message: message),
-            if (message is BasicMessage)
-              _buildBasicMessage(context, state, message: message),
-            if (message is SubscriptionPackageMessage)
-              _buildSubscriptionMessage(
-                context,
-                message: message,
-              ),
-            if (message is AppointmentMessage)
-              _buildAppointmentMessage(
-                context,
-                message: message,
-              ),
+            if (message.deletedAt != null) ...[
+              _buildMessageDeleted(context),
+            ] else ...[
+              if (message is BasicMessage)
+                _buildBasicMessage(context, state, message: message),
+              if (message is SubscriptionPackageMessage)
+                _buildSubscriptionMessage(
+                  context,
+                  message: message,
+                ),
+              if (message is AppointmentMessage)
+                _buildAppointmentMessage(
+                  context,
+                  message: message,
+                ),
+            ],
           ],
         ),
       ),
@@ -227,17 +231,23 @@ class _ChatPageState extends State<ChatPage> {
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     final isOwner = message.owner.id == state.currentUser.id;
+    final bloc = context.read<ChatPageBloc>();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isOwner ? colorScheme.inversePrimary : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(8),
+    return GestureDetector(
+      onLongPress: () => bloc.add(
+        MessageOptionsRequestedEvent(context, message: message),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Text(
-          message.text,
-          style: const TextStyle(fontSize: 16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isOwner ? colorScheme.inversePrimary : Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            message.text,
+            style: const TextStyle(fontSize: 16),
+          ),
         ),
       ),
     );
@@ -365,6 +375,22 @@ class _ChatPageState extends State<ChatPage> {
                 .toList(),
           const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMessageDeleted(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          'ยกเลิกการส่งข้อความ',
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade400),
+        ),
       ),
     );
   }

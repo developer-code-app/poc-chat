@@ -10,6 +10,7 @@ abstract class Message {
   Message({
     required this.id,
     required this.owner,
+    this.deletedAt,
   });
 
   factory Message.fromEntity(isar_entity.IsarMessageEntity entity) {
@@ -23,12 +24,14 @@ abstract class Message {
         return BasicMessage(
           id: entity.id.toString(),
           owner: owner,
+          deletedAt: entity.deletedAt,
           text: entity.text.getOrThrowException(invalidException),
         );
       case MessageType.photo:
         return PhotoMessage(
           id: entity.id.toString(),
           owner: owner,
+          deletedAt: entity.deletedAt,
           photos: entity.photos.getOrThrowException(invalidException),
         );
       case MessageType.subscription:
@@ -37,6 +40,7 @@ abstract class Message {
         return SubscriptionPackageMessage(
           id: entity.id.toString(),
           owner: owner,
+          deletedAt: entity.deletedAt,
           imageUrl: package.imageUrl,
           name: package.name,
           isPurchased: package.isPurchased,
@@ -50,6 +54,7 @@ abstract class Message {
         return AppointmentMessage(
           id: entity.id.toString(),
           owner: owner,
+          deletedAt: entity.deletedAt,
           packageName: appointment.packageName,
           availableDates: availableDates,
           selectedDate: appointment.selectedDate?.let(AvailableDate.fromEntity),
@@ -61,6 +66,7 @@ abstract class Message {
 
   final String id;
   final User owner;
+  final DateTime? deletedAt;
 }
 
 class BasicMessage extends Message {
@@ -68,6 +74,7 @@ class BasicMessage extends Message {
     required super.id,
     required super.owner,
     required this.text,
+    super.deletedAt,
   });
 
   final String text;
@@ -78,6 +85,7 @@ class PhotoMessage extends Message {
     required super.id,
     required super.owner,
     required this.photos,
+    super.deletedAt,
   });
 
   final List<String> photos;
@@ -90,6 +98,7 @@ class SubscriptionPackageMessage extends Message {
     required this.imageUrl,
     required this.name,
     required this.isPurchased,
+    super.deletedAt,
   });
 
   final String imageUrl;
@@ -101,6 +110,7 @@ class AppointmentMessage extends Message {
   AppointmentMessage({
     required super.id,
     required super.owner,
+    required super.deletedAt,
     required this.packageName,
     required this.availableDates,
     this.selectedDate,

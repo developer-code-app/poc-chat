@@ -22,8 +22,14 @@ class BasicMessageSentEvent extends _Event {
   final String text;
 }
 
-class MessageUpdatedEvent extends _Event {
-  MessageUpdatedEvent(this.message);
+class MessageAddedEvent extends _Event {
+  MessageAddedEvent(this.message);
+
+  final Message message;
+}
+
+class MessageDeletedEvent extends _Event {
+  MessageDeletedEvent(this.message);
 
   final Message message;
 }
@@ -39,3 +45,19 @@ class ShareSubscriptionPackageEvent extends _Event {
 }
 
 class SearchEvent extends _Event {}
+
+class MessageOptionsRequestedEvent extends _Event {
+  MessageOptionsRequestedEvent(
+    this.context, {
+    required this.message,
+  });
+
+  final BuildContext context;
+  final Message message;
+}
+
+class DeleteMessageRequestedEvent extends _Event {
+  DeleteMessageRequestedEvent({required this.messageId});
+
+  final String messageId;
+}
