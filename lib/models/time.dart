@@ -1,6 +1,11 @@
+import 'package:json_annotation/json_annotation.dart';
+
 enum Time {
+  @JsonValue('MORNING')
   morning,
+  @JsonValue('AFTERNOON')
   afternoon,
+  @JsonValue('CUSTOM')
   custom,
 }
 

@@ -5,6 +5,7 @@ import 'package:poc_chat/models/time.dart';
 import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/providers/isar_storage/entities/isar_message_entity.dart'
     as isar_entity;
+import 'package:poc_chat/providers/isar_storage/entities/message_entity.dart';
 
 abstract class Message {
   Message({
@@ -12,6 +13,59 @@ abstract class Message {
     required this.owner,
     this.deletedAt,
   });
+
+  factory Message.fromMessageEntity(MessageEntity entity) {
+    final invalidException = Exception('Invalid response spec.');
+    final owner = entity.owner
+        .getOrThrowException(Exception('User not found.'))
+        .let(User.fromUserEntity);
+
+    switch (entity.type) {
+      case MessageType.basic:
+        return BasicMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          deletedAt: entity.deletedAt,
+          text: entity.text.getOrThrowException(invalidException),
+        );
+      case MessageType.photo:
+        return PhotoMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          deletedAt: entity.deletedAt,
+          photos: entity.photos.getOrThrowException(invalidException),
+        );
+      case MessageType.subscription:
+        final package = entity.package.getOrThrowException(invalidException);
+
+        return SubscriptionPackageMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          deletedAt: entity.deletedAt,
+          imageUrl: package.imageUrl,
+          name: package.name,
+          isPurchased: package.isPurchased,
+        );
+      case MessageType.appointment:
+        final appointment =
+            entity.appointment.getOrThrowException(invalidException);
+        final availableDates = appointment.availableDates
+            .map(AvailableDate.fromAvailableDateEntity)
+            .toList();
+
+        return AppointmentMessage(
+          id: entity.id.toString(),
+          owner: owner,
+          deletedAt: entity.deletedAt,
+          packageName: appointment.packageName,
+          availableDates: availableDates,
+          selectedDate: appointment.selectedDate
+              ?.let(AvailableDate.fromAvailableDateEntity),
+        );
+      default:
+        throw Exception('Unsupported message type.');
+    }
+  }
 
   factory Message.fromEntity(isar_entity.IsarMessageEntity entity) {
     final invalidException = Exception('Invalid response spec.');
@@ -123,6 +177,10 @@ class AppointmentMessage extends Message {
 
 class AvailableDate {
   AvailableDate({required this.date, required this.time});
+
+  factory AvailableDate.fromAvailableDateEntity(AvailableDateEntity entity) {
+    return AvailableDate(date: entity.date, time: entity.time);
+  }
 
   factory AvailableDate.fromEntity(isar_entity.AvailableDate entity) {
     return AvailableDate(date: entity.date, time: entity.time);

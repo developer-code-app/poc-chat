@@ -4,6 +4,8 @@ abstract class ChatPageState {}
 
 class InitialState extends _State {}
 
+class LoadInProgressState extends _State {}
+
 class LoadSuccessState extends _State {
   LoadSuccessState({required this.room, required this.currentUser});
 
