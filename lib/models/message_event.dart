@@ -16,6 +16,7 @@ abstract class WebSocketPayload {
           ),
           deletedAt: json['message']['deleted_at'],
           text: json['message']['text'],
+          roomId: json['message']['room_id'],
         ),
       );
     } else if (json['type'] == 'MESSAGE' &&
@@ -32,6 +33,7 @@ abstract class WebSocketPayload {
           imageUrl: json['message']['image_url'],
           name: json['message']['name'],
           isPurchased: json['message']['is_purchased'],
+          roomId: json['message']['room_id'],
         ),
       );
     } else if (json['type'] == 'MESSAGE' &&
@@ -56,6 +58,7 @@ abstract class WebSocketPayload {
             date: json['appointment']['selected_date']['date'],
             time: json['appointment']['selected_date']['time'],
           ),
+          roomId: json['message']['room_id'],
         ),
       );
     } else if (json['type'] == 'EVENT' && json['event']['type'] == 'DELETE') {

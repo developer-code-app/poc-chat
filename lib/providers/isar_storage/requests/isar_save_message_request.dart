@@ -24,6 +24,20 @@ abstract class IsarSaveMessageRequest {
         name: message.name,
         isPurchased: message.isPurchased,
       );
+    } else if (message is AppointmentMessage) {
+      return IsarSaveAppointmentMessageRequest(
+        userId: int.parse(message.owner.id),
+        chatRoomId: int.parse(chatRoomId),
+        packageName: message.packageName,
+        availableDates: message.availableDates
+            .map(
+              (availableDate) => AvailableDate(
+                date: availableDate.date,
+                time: availableDate.time,
+              ),
+            )
+            .toList(),
+      );
     } else {
       throw Exception('Unsupported message');
     }
@@ -54,4 +68,18 @@ class IsarSaveSubscriptionPackageMessageRequest extends IsarSaveMessageRequest {
   final String imageUrl;
   final String name;
   final bool isPurchased;
+}
+
+class IsarSaveAppointmentMessageRequest extends IsarSaveMessageRequest {
+  IsarSaveAppointmentMessageRequest({
+    required super.userId,
+    required super.chatRoomId,
+    required this.packageName,
+    required this.availableDates,
+    this.selectedDate,
+  });
+
+  final String packageName;
+  final List<AvailableDate> availableDates;
+  final AvailableDate? selectedDate;
 }

@@ -11,6 +11,7 @@ class MessageEntity {
     required this.id,
     required this.type,
     required this.owner,
+    required this.roomId,
     this.text,
     this.photos,
     this.package,
@@ -31,6 +32,7 @@ class MessageEntity {
   final AppointmentEntity? appointment;
   final DateTime? deletedAt;
   final UserEntity owner;
+  final int roomId;
 }
 
 @JsonSerializable()

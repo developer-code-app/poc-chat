@@ -75,6 +75,7 @@ class ChatWebSocket {
         },
         'text': message.text,
         'type': 'BASIC',
+        'room_id': message.roomId,
       }
     };
 
@@ -99,6 +100,7 @@ class ChatWebSocket {
         'name': message.name,
         'is_purchased': message.isPurchased,
         'type': 'SUBSCRIPTION',
+        'room_id': message.roomId,
       }
     };
 

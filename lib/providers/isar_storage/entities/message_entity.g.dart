@@ -10,6 +10,8 @@ MessageEntity _$MessageEntityFromJson(Map<String, dynamic> json) =>
     MessageEntity(
       id: json['id'] as int,
       type: $enumDecode(_$MessageTypeEnumMap, json['type']),
+      owner: UserEntity.fromJson(json['owner'] as Map<String, dynamic>),
+      roomId: json['room_id'] as int,
       text: json['text'] as String?,
       photos:
           (json['photos'] as List<dynamic>?)?.map((e) => e as String).toList(),
@@ -24,7 +26,6 @@ MessageEntity _$MessageEntityFromJson(Map<String, dynamic> json) =>
       deletedAt: json['deleted_at'] == null
           ? null
           : DateTime.parse(json['deleted_at'] as String),
-      owner: UserEntity.fromJson(json['owner'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MessageEntityToJson(MessageEntity instance) {
@@ -45,6 +46,7 @@ Map<String, dynamic> _$MessageEntityToJson(MessageEntity instance) {
   writeNotNull('appointment', instance.appointment);
   writeNotNull('deleted_at', instance.deletedAt?.toIso8601String());
   val['owner'] = instance.owner;
+  val['room_id'] = instance.roomId;
   return val;
 }
 

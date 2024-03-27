@@ -12,8 +12,12 @@ class RoomRepository {
     return storageProvider.chatRoom.findMessages(message: message);
   }
 
-  Future<ChatRoom> findChatRoom({required String chatRoomId}) async {
+  Future<ChatRoom?> findChatRoom({required String chatRoomId}) async {
     return storageProvider.chatRoom.findChatRoom(chatRoomId: chatRoomId);
+  }
+
+  Future<ChatRoom> createChatRoom({required String chatRoomId}) async {
+    return storageProvider.chatRoom.createChatRoom(chatRoomId: chatRoomId);
   }
 
   Future<Message> saveMessage({
@@ -26,6 +30,13 @@ class RoomRepository {
     );
 
     return storageProvider.chatRoom.saveMessage(request);
+  }
+
+  Future<void> saveMessages({
+    required List<Message> messages,
+    required String chatRoomId,
+  }) {
+    return storageProvider.chatRoom.saveMessages(messages);
   }
 
   Future<Message> deleteMessage({required String messageId}) {

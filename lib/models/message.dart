@@ -11,6 +11,7 @@ abstract class Message {
   Message({
     required this.id,
     required this.owner,
+    required this.roomId,
     this.deletedAt,
   });
 
@@ -27,6 +28,7 @@ abstract class Message {
           owner: owner,
           deletedAt: entity.deletedAt,
           text: entity.text.getOrThrowException(invalidException),
+          roomId: entity.roomId.toString(),
         );
       case MessageType.photo:
         return PhotoMessage(
@@ -34,6 +36,7 @@ abstract class Message {
           owner: owner,
           deletedAt: entity.deletedAt,
           photos: entity.photos.getOrThrowException(invalidException),
+          roomId: entity.roomId.toString(),
         );
       case MessageType.subscription:
         final package = entity.package.getOrThrowException(invalidException);
@@ -45,6 +48,7 @@ abstract class Message {
           imageUrl: package.imageUrl,
           name: package.name,
           isPurchased: package.isPurchased,
+          roomId: entity.roomId.toString(),
         );
       case MessageType.appointment:
         final appointment =
@@ -61,6 +65,7 @@ abstract class Message {
           availableDates: availableDates,
           selectedDate: appointment.selectedDate
               ?.let(AvailableDate.fromAvailableDateEntity),
+          roomId: entity.roomId.toString(),
         );
       default:
         throw Exception('Unsupported message type.');
@@ -72,6 +77,10 @@ abstract class Message {
     final owner = entity.owner.value
         .getOrThrowException(Exception('User not found.'))
         .let(User.fromEntity);
+    final roomId = entity.room.value
+        .getOrThrowException(Exception('Room not found.'))
+        .id
+        .toString();
 
     switch (entity.type) {
       case MessageType.basic:
@@ -80,6 +89,7 @@ abstract class Message {
           owner: owner,
           deletedAt: entity.deletedAt,
           text: entity.text.getOrThrowException(invalidException),
+          roomId: roomId,
         );
       case MessageType.photo:
         return PhotoMessage(
@@ -87,6 +97,7 @@ abstract class Message {
           owner: owner,
           deletedAt: entity.deletedAt,
           photos: entity.photos.getOrThrowException(invalidException),
+          roomId: roomId,
         );
       case MessageType.subscription:
         final package = entity.package.getOrThrowException(invalidException);
@@ -98,6 +109,7 @@ abstract class Message {
           imageUrl: package.imageUrl,
           name: package.name,
           isPurchased: package.isPurchased,
+          roomId: roomId,
         );
       case MessageType.appointment:
         final appointment =
@@ -112,6 +124,7 @@ abstract class Message {
           packageName: appointment.packageName,
           availableDates: availableDates,
           selectedDate: appointment.selectedDate?.let(AvailableDate.fromEntity),
+          roomId: roomId,
         );
       default:
         throw Exception('Unsupported message type.');
@@ -121,12 +134,14 @@ abstract class Message {
   final String id;
   final User owner;
   final DateTime? deletedAt;
+  final String roomId;
 }
 
 class BasicMessage extends Message {
   BasicMessage({
     required super.id,
     required super.owner,
+    required super.roomId,
     required this.text,
     super.deletedAt,
   });
@@ -138,6 +153,7 @@ class PhotoMessage extends Message {
   PhotoMessage({
     required super.id,
     required super.owner,
+    required super.roomId,
     required this.photos,
     super.deletedAt,
   });
@@ -149,6 +165,7 @@ class SubscriptionPackageMessage extends Message {
   SubscriptionPackageMessage({
     required super.id,
     required super.owner,
+    required super.roomId,
     required this.imageUrl,
     required this.name,
     required this.isPurchased,
@@ -165,6 +182,7 @@ class AppointmentMessage extends Message {
     required super.id,
     required super.owner,
     required super.deletedAt,
+    required super.roomId,
     required this.packageName,
     required this.availableDates,
     this.selectedDate,

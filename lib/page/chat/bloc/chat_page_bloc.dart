@@ -76,13 +76,25 @@ class ChatPageBloc extends Bloc<_Event, _State> {
   ) async {
     try {
       emit(LoadInProgressState());
-
       await Future.delayed(const Duration(seconds: 1));
 
-      final chatRoom = await repository.findChatRoom(chatRoomId: chatRoomId);
-      final messages = await fetchMessages();
+      final chatRoom = await repository
+          .findChatRoom(chatRoomId: chatRoomId)
+          .then((chatRoom) async {
+        if (chatRoom != null) return chatRoom;
 
-      add(DataLoadedEvent(chatRoom: chatRoom.copyWith(messages: messages)));
+        return await repository.createChatRoom(chatRoomId: chatRoomId);
+      });
+
+      if (chatRoom.messages.isEmpty) {
+        final messages = await fetchMessages();
+        await repository.saveMessages(
+            chatRoomId: chatRoomId, messages: messages);
+
+        add(DataLoadedEvent(chatRoom: chatRoom.copyWith(messages: messages)));
+      } else {
+        add(DataLoadedEvent(chatRoom: chatRoom));
+      }
     } on Exception catch (error) {
       add(ErrorOccurredEvent(error));
     }
@@ -111,6 +123,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
         id: 'MESSAGE_ID',
         owner: user,
         text: event.text,
+        roomId: chatRoomId,
       ),
       chatRoomId: chatRoomId,
     );
@@ -130,6 +143,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
         imageUrl: event.package.thumbnailUrl,
         name: event.package.name,
         isPurchased: event.isPurchased,
+        roomId: chatRoomId,
       ),
       chatRoomId: chatRoomId,
     );
