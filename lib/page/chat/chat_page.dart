@@ -47,158 +47,169 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<ChatPageBloc, ChatPageState>(
+      builder: (context, state) {
+        if (state is LoadSuccessState) {
+          return _buildLoadSuccess(context, state);
+        } else if (state is LoadInProgressState) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (state is LoadFailureState) {
+          return Scaffold(body: Center(child: Text(state.error.toString())));
+        } else {
+          return Scaffold(body: Container());
+        }
+      },
+    );
+  }
+
+  Widget _buildLoadSuccess(
+    BuildContext context,
+    LoadSuccessState state,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
+    final bloc = context.read<ChatPageBloc>();
 
-    return BlocBuilder<ChatPageBloc, ChatPageState>(builder: (context, state) {
-      final bloc = context.read<ChatPageBloc>();
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        backgroundColor: colorScheme.inversePrimary,
+        title: Text('Hello, ${state.currentUser.name}'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              final controller = TextEditingController();
 
-      if (state is LoadSuccessState) {
-        return Scaffold(
-          resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            backgroundColor: colorScheme.inversePrimary,
-            title: Text('Hello, ${state.currentUser.name}'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  final controller = TextEditingController();
-
-                  AlertDialogConvenienceShowing.showAlertDialog(
-                    context: context,
-                    title: 'Search Message',
-                    inputField: TextField(controller: controller),
-                    actions: [
-                      AlertAction(
-                        'Search',
-                        onPressed: () => navigationToSearchPage(
-                          keyword: controller.text,
-                          currentUser: state.currentUser,
+              AlertDialogConvenienceShowing.showAlertDialog(
+                context: context,
+                title: 'Search Message',
+                inputField: TextField(controller: controller),
+                actions: [
+                  AlertAction(
+                    'Search',
+                    onPressed: () => navigationToSearchPage(
+                      keyword: controller.text,
+                      currentUser: state.currentUser,
+                    ),
+                  )
+                ],
+              );
+            },
+            child: Icon(
+              Icons.search,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          if (state.currentUser.id == '1')
+            TextButton(
+              onPressed: () {
+                action_sheet.ActionSheet(
+                  title: 'Share',
+                  actions: [
+                    action_sheet.Action(
+                      'Subscription',
+                      () => bloc.add(
+                        ShareSubscriptionPackageEvent(
+                          package: package,
+                          isPurchased: false,
                         ),
-                      )
-                    ],
-                  );
-                },
-                child: Icon(
-                  Icons.search,
-                  color: Colors.grey.shade700,
+                      ),
+                    ),
+                    action_sheet.Action(
+                      'Appointment',
+                      () {},
+                    )
+                  ],
+                  cancel: action_sheet.Action(
+                    'Cancel',
+                    () {},
+                  ),
+                ).show(context);
+              },
+              child: Icon(
+                Icons.share,
+                color: Colors.grey.shade700,
+              ),
+            ),
+        ],
+      ),
+      backgroundColor: Colors.grey.shade100,
+      body: Column(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ListView(
+                  controller: scrollController,
+                  shrinkWrap: true,
+                  reverse: true,
+                  children: state.room.messages.reversed.map((message) {
+                    return _buildMessage(context, state, message: message);
+                  }).toList(),
                 ),
               ),
-              if (state.currentUser.id == '1')
-                TextButton(
-                  onPressed: () {
-                    action_sheet.ActionSheet(
-                      title: 'Share',
-                      actions: [
-                        action_sheet.Action(
-                          'Subscription',
-                          () => bloc.add(
-                            ShareSubscriptionPackageEvent(
-                              package: package,
-                              isPurchased: false,
-                            ),
-                          ),
-                        ),
-                        action_sheet.Action(
-                          'Appointment',
-                          () {},
-                        )
-                      ],
-                      cancel: action_sheet.Action(
-                        'Cancel',
-                        () {},
-                      ),
-                    ).show(context);
-                  },
-                  child: Icon(
-                    Icons.share,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-            ],
+            ),
           ),
-          backgroundColor: Colors.grey.shade100,
-          body: Column(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: ListView(
-                      controller: scrollController,
-                      shrinkWrap: true,
-                      reverse: true,
-                      children: state.room.messages.reversed.map((message) {
-                        return _buildMessage(context, state, message: message);
-                      }).toList(),
+          Container(
+            color: colorScheme.inversePrimary,
+            height: 100,
+            width: double.maxFinite,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.camera_alt_outlined,
+                        color: Colors.grey.shade700,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              Container(
-                color: colorScheme.inversePrimary,
-                height: 100,
-                width: double.maxFinite,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.photo_outlined,
+                        color: Colors.grey.shade700,
                       ),
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.photo_outlined,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: textEditingController,
-                          decoration: const InputDecoration(hintText: 'Aa'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: GestureDetector(
-                          onTap: _onMessageSubmitted,
-                          child: Icon(
-                            Icons.send,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: textEditingController,
+                      decoration: const InputDecoration(hintText: 'Aa'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: GestureDetector(
+                      onTap: _onMessageSubmitted,
+                      child: Icon(
+                        Icons.send,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        );
-      } else if (state is LoadFailureState) {
-        return Scaffold(body: Center(child: Text(state.error.toString())));
-      } else {
-        return Scaffold(body: Container());
-      }
-    });
+        ],
+      ),
+    );
   }
 
   Widget _buildMessage(

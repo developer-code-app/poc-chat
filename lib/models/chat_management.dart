@@ -17,7 +17,7 @@ class ChatWebSocket {
     return _instance!;
   }
 
-  static String webSocketUrl = 'ws://10.0.0.24:8080';
+  static String webSocketUrl = 'ws://10.0.0.9:8080';
 
   WebSocket? webSocket;
 
@@ -75,6 +75,7 @@ class ChatWebSocket {
         },
         'text': message.text,
         'type': 'BASIC',
+        'room_id': message.roomId,
       }
     };
 
@@ -99,6 +100,7 @@ class ChatWebSocket {
         'name': message.name,
         'is_purchased': message.isPurchased,
         'type': 'SUBSCRIPTION',
+        'room_id': message.roomId,
       }
     };
 

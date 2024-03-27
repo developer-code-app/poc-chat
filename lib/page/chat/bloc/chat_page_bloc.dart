@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +10,9 @@ import 'package:poc_chat/models/message.dart';
 import 'package:poc_chat/models/subscription_package.dart';
 import 'package:poc_chat/models/user.dart';
 import 'package:poc_chat/page/action_sheet.dart' as action_sheet;
+import 'package:poc_chat/providers/isar_storage/entities/message_entity.dart';
 import 'package:poc_chat/repository/room_repository.dart';
+import 'package:http/http.dart' as http;
 
 part 'chat_page_event.dart';
 part 'chat_page_state.dart';
@@ -72,9 +75,26 @@ class ChatPageBloc extends Bloc<_Event, _State> {
     Emitter emit,
   ) async {
     try {
-      final chatRoom = await repository.findChatRoom(chatRoomId: chatRoomId);
+      emit(LoadInProgressState());
+      await Future.delayed(const Duration(seconds: 1));
 
-      add(DataLoadedEvent(chatRoom: chatRoom));
+      final chatRoom = await repository
+          .findChatRoom(chatRoomId: chatRoomId)
+          .then((chatRoom) async {
+        if (chatRoom != null) return chatRoom;
+
+        return await repository.createChatRoom(chatRoomId: chatRoomId);
+      });
+
+      if (chatRoom.messages.isEmpty) {
+        final messages = await fetchMessages();
+        await repository.saveMessages(
+            chatRoomId: chatRoomId, messages: messages);
+
+        add(DataLoadedEvent(chatRoom: chatRoom.copyWith(messages: messages)));
+      } else {
+        add(DataLoadedEvent(chatRoom: chatRoom));
+      }
     } on Exception catch (error) {
       add(ErrorOccurredEvent(error));
     }
@@ -103,6 +123,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
         id: 'MESSAGE_ID',
         owner: user,
         text: event.text,
+        roomId: chatRoomId,
       ),
       chatRoomId: chatRoomId,
     );
@@ -122,6 +143,7 @@ class ChatPageBloc extends Bloc<_Event, _State> {
         imageUrl: event.package.thumbnailUrl,
         name: event.package.name,
         isPurchased: event.isPurchased,
+        roomId: chatRoomId,
       ),
       chatRoomId: chatRoomId,
     );
@@ -188,5 +210,22 @@ class ChatPageBloc extends Bloc<_Event, _State> {
 
     add(MessageDeletedEvent(message));
     ChatWebSocket.instance.deleteMessage(message);
+  }
+
+  Future<List<Message>> fetchMessages() async {
+    final response =
+        await http.get(Uri.parse('http://10.0.0.9:8080/chat_messages/'));
+
+    if (response.statusCode == 200) {
+      final entities = List<MessageEntity>.from(
+        json.decode(response.body).map((x) => MessageEntity.fromJson(x)),
+      );
+
+      return entities
+          .map((entity) => Message.fromMessageEntity(entity))
+          .toList();
+    } else {
+      throw Exception('Failed to load album');
+    }
   }
 }

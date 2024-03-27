@@ -16,6 +16,7 @@ abstract class WebSocketPayload {
           ),
           deletedAt: json['message']['deleted_at'],
           text: json['message']['text'],
+          roomId: json['message']['room_id'],
         ),
       );
     } else if (json['type'] == 'MESSAGE' &&
@@ -32,6 +33,32 @@ abstract class WebSocketPayload {
           imageUrl: json['message']['image_url'],
           name: json['message']['name'],
           isPurchased: json['message']['is_purchased'],
+          roomId: json['message']['room_id'],
+        ),
+      );
+    } else if (json['type'] == 'MESSAGE' &&
+        json['message']['type'] == 'APPOINTMENT') {
+      return MessagePayload(
+        message: AppointmentMessage(
+          id: json['message']['id'],
+          owner: User(
+            id: json['message']['owner']['id'],
+            name: json['message']['owner']['name'],
+            imageUrl: json['message']['owner']['image_url'],
+          ),
+          deletedAt: json['message']['deleted_at'],
+          availableDates: (json['times'] as List<dynamic>)
+              .map((e) => AvailableDate(
+                    date: json['appointment']['selected_date']['date'],
+                    time: json['appointment']['selected_date']['time'],
+                  ))
+              .toList(),
+          packageName: json['appointment']['package_name'],
+          selectedDate: AvailableDate(
+            date: json['appointment']['selected_date']['date'],
+            time: json['appointment']['selected_date']['time'],
+          ),
+          roomId: json['message']['room_id'],
         ),
       );
     } else if (json['type'] == 'EVENT' && json['event']['type'] == 'DELETE') {
